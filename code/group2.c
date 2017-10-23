@@ -11,10 +11,11 @@
 
 #define MAX_RETRANSMISSIONS 4
 #define BROADCAST_CHANNEL 128
+#define ARRAY_SIZE 40
 
 struct broadcastMessage {
     clock_time_t time;
-	unsigned short originator;
+	int id;
 };
 
 struct neighbor {
@@ -22,10 +23,36 @@ struct neighbor {
     clock_time_t time;
 };
 
+static struct neighbor neighbor_table[ARRAY_SIZE];
 static struct etimer et;
 static struct broadcastMessage tmSent;
 static void timerCallback_turnOffLeds();
 static struct ctimer leds_off_timer_send;
+static int array_occupied; /* Number of elements in array */
+
+// Return array position of neighbor or -1
+static int find_neighbor(struct neighbor n, struct neighbor ntb[])
+{
+    int i;
+    for(i = 0; i < ARRAY_SIZE; i++)
+    {
+        if (ntb[i].id == n.id)
+        {
+            printf("Found neighbor at position %d.\n", i);
+            return i;
+        }
+    }
+    printf("Neighbor nod found in array.\n");
+    return -1;
+}
+
+/* Add neighbor to array and increasea index */
+static void add_neighbor(struct neighbor n, struct neighbor ntb[])
+{
+    printf("Add new neighbor with id %d to array at position %d.\n", n.id, array_occupied);
+    ntb[array_occupied] = n;
+    array_occupied++;
+}
 
 /*-----------------------------------------------------*/
 // Neighborhood Discovery Phase
@@ -40,6 +67,15 @@ static void recv_bc(struct broadcast_conn *c, rimeaddr_t *from)
 
     leds_on(LEDS_RED);
     ctimer_set(&leds_off_timer_send, CLOCK_SECOND, timerCallback_turnOffLeds, NULL);
+
+    struct neighbor new_neighbor;
+    new_neighbor.id = rsc_msg.id;
+    new_neighbor.time = rsc_msg.time;
+    if (find_neighbor(new_neighbor, neighbor_table) >= -1)
+            {
+                add_neighbor(new_neighbor, neighbor_table);
+            }
+
 }
 
 /*-----------------------------------------------------*/
@@ -76,7 +112,7 @@ PROCESS_THREAD(broadcast_process, ev, data)
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
     etimer_reset(&et);
     tmSent.time = clock_time();
-    tmSent.originator = node_id;
+    tmSent.id = node_id;
     packetbuf_copyfrom(&tmSent, sizeof(tmSent));
     /* send the packet */
     broadcast_send(&bc);
@@ -90,8 +126,8 @@ PROCESS_THREAD(broadcast_process, ev, data)
 
 }
 
-clock_time_t calc_new_time(neighbor){
-	return clocktime() * r * (clocktime() - neighbor.time);
+clock_time_t calc_new_time(struct neighbor n){
+	return clock_time() * r * (clock_time() - n.time);
 }
 
 
