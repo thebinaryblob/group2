@@ -62,8 +62,11 @@ static void add_neighbor(struct neighbor n, struct neighbor ntb[])
     array_occupied++;
 }
 
-clock_time_t calc_new_time(struct neighbor n){
-    return clock_time() * r * (clock_time() - n.this_neighbor_time);
+clock_time_t calc_new_time(struct neighbor n)
+{
+    clock_time_t result = clock_time() - r*(clock_time() - n.this_neighbor_time);
+    return result;
+    //return clock_time() * r * (clock_time() - n.this_neighbor_time);
 }
 
 /*-----------------------------------------------------*/
@@ -202,6 +205,15 @@ static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seq
 
         /* Update neighbor time in array */
         neighbor_table[neighbor_positon].this_neighbor_time = this_neighbor_time;
+
+        /* Adjust for time drift and update our local time */
+        clock_time_t newtime = calc_new_time(neighbor_table[neighbor_positon]);
+        printf("###############################################\n");
+        printf("Old time: %d.\n", (uint16_t)clock_time());
+        printf("New time: %d.\n", (uint16_t)newtime);
+        clock_set_seconds(newtime);
+        printf("Set time: %d.\n", (uint16_t)clock_time());
+        printf("###############################################\n");
     }
 }
 
