@@ -13,8 +13,11 @@
 // Neighborhood Discovery Phase
 /*-----------------------------------------------------*/
 
-
-
+// Send broadcast with timestamp x
+// Receive unicast with timestamp x
+// Compare x to local time y => Set up neighmours
+// Reply to broadcast with uncast and my ID
+// Repeat every n minus
 
 /*-----------------------------------------------------*/
 // Convergence Phase
