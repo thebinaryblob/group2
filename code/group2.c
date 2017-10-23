@@ -206,7 +206,7 @@ static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seq
 }
 
 static void sent_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retransmissions);
-static void timedout_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retransmissions);
+static void timedout_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retransmissions); 
 static const struct runicast_callbacks runicast_callbacks = {recv_runicast, sent_runicast, timedout_runicast};
 static void sent_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retransmissions)
 {
