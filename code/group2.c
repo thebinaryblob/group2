@@ -38,6 +38,7 @@ static struct etimer et;
 static struct broadcastMessage tmSent;
 static void timerCallback_turnOffLeds();
 static struct ctimer leds_off_timer_send;
+static uint16_t r = 0.5;
 
 /* Timer callback turns off the blue led */
 static void timerCallback_turnOffLeds()
@@ -75,6 +76,10 @@ PROCESS_THREAD(broadcast_process, ev, data)
   }
   PROCESS_END();
 
+}
+
+clock_time_t calc_new_time(neighbor){
+	return clocktime() * r * (clocktime() - neighbor.time);
 }
 
 
