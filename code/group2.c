@@ -22,22 +22,30 @@ struct neighbor {
     clock_time_t time;
 };
 
+static struct etimer et;
+static struct broadcastMessage tmSent;
+static void timerCallback_turnOffLeds();
+static struct ctimer leds_off_timer_send;
+
 /*-----------------------------------------------------*/
 // Neighborhood Discovery Phase
 /*-----------------------------------------------------*/
 static void recv_bc(struct broadcast_conn *c, rimeaddr_t *from)
 {
-	  //printf("received '%s' from %d.%d, RSSI=%i\n", tmres.messageString, from->u8[0], from->u8[1], (int) packetbuf_attr(PACKETBUF_ATTR_RSSI));
+    static struct broadcastMessage rsc_msg;
+    packetbuf_copyto(&rsc_msg);
+
+    printf("Received time %d from %d.%d\n",
+            (uint16_t)rsc_msg.time, from->u8[0], from->u8[1]);
+
+    leds_on(LEDS_RED);
+    ctimer_set(&leds_off_timer_send, CLOCK_SECOND, timerCallback_turnOffLeds, NULL);
 }
 
 /*-----------------------------------------------------*/
 static const struct broadcast_callbacks broadcast_callback = {recv_bc};
 static struct broadcast_conn bc;
 /*-----------------------------------------------------*/
-static struct etimer et;
-static struct broadcastMessage tmSent;
-static void timerCallback_turnOffLeds();
-static struct ctimer leds_off_timer_send;
 
 /* Timer callback turns off the blue led */
 static void timerCallback_turnOffLeds()
@@ -71,7 +79,7 @@ PROCESS_THREAD(broadcast_process, ev, data)
     /* turn on and of blue led */
     leds_on(LEDS_BLUE);
     ctimer_set(&leds_off_timer_send, CLOCK_SECOND, timerCallback_turnOffLeds, NULL);
-    printf("sent broadcast message\n");
+    printf("sent broadcast message from %d\n", node_id);
   }
   PROCESS_END();
 
