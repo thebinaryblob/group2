@@ -42,7 +42,7 @@ static int find_neighbor(struct neighbor n, struct neighbor ntb[])
             return i;
         }
     }
-    printf("Neighbor nod found in array.\n");
+    printf("Neighbor not found in array.\n");
     return -1;
 }
 
@@ -71,7 +71,7 @@ static void recv_bc(struct broadcast_conn *c, rimeaddr_t *from)
     struct neighbor new_neighbor;
     new_neighbor.id = rsc_msg.id;
     new_neighbor.time = rsc_msg.time;
-    if (find_neighbor(new_neighbor, neighbor_table) >= -1)
+    if (find_neighbor(new_neighbor, neighbor_table) == -1)
             {
                 add_neighbor(new_neighbor, neighbor_table);
             }
