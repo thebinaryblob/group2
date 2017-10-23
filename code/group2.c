@@ -78,8 +78,8 @@ PROCESS_THREAD(broadcast_process, ev, data)
 
 }
 
-clock_time_t calc_new_time(neighbor){
-	return clocktime() * r * (clocktime() - neighbor.time);
+clock_time_t calc_new_time(neighbor n){
+	return clocktime() * r * (clocktime() - n.time);
 }
 
 
