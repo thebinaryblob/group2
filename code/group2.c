@@ -1,19 +1,23 @@
 /* Group project IoT 2017 */
 
 #include "contiki.h"
-#include "net/rime.h"
+#include "net/rime.h" /* for runicast */
 #include "dev/button-sensor.h"
 #include "dev/leds.h" /* for led control */
 #include "dev/light.h"
 #include "node-id.h" /* fro node_id */
-#include <stdio.h>
+#include <stdio.h> /* for printing */
 #include "sys/rtimer.h" /* for timestamps */
 
+/* constants */
 #define MAX_RETRANSMISSIONS 4
 #define BROADCAST_CHANNEL 128
 #define RUNICAST_CHANNEL  120
 #define ARRAY_SIZE 40
 static uint16_t r = 0.5;
+
+
+/* Datatype declaration */
 
 struct broadcastMessage {
     int id;
@@ -29,16 +33,33 @@ struct unicastMessage {
 struct neighbor {
     int id;
     clock_time_t this_neighbor_time;
-    clock_time_t last_sent; // Is 0 if not yet used
+    clock_time_t last_sent; // Is 0 if not used
 };
 
+
+/* Variable declaration */
 static struct neighbor neighbor_table[ARRAY_SIZE];
 static struct etimer et, ef;
-static void timerCallback_turnOffLeds();
 static struct ctimer leds_off_timer_send;
 static int array_occupied; /* Number of elements in array */
+static struct broadcastMessage tmSent;
+static struct broadcast_conn bc;
+static void timerCallback_turnOffLeds();
 
-// Return array position of neighbor or -1
+/* Function declaration */
+static void timerCallback_turnOffLeds();
+static int find_neighbor(struct neighbor n, struct neighbor ntb[]);
+
+/* Function definition */
+
+/* Timer callback turns off all leds */
+static void timerCallback_turnOffLeds()
+{
+    leds_off(LEDS_ALL);
+}
+
+
+/* Return array position of neighbor or -1 */
 static int find_neighbor(struct neighbor n, struct neighbor ntb[])
 {
     static int i;
@@ -54,6 +75,7 @@ static int find_neighbor(struct neighbor n, struct neighbor ntb[])
     return -1;
 }
 
+
 /* Add neighbor to array and increasea index */
 static void add_neighbor(struct neighbor n, struct neighbor ntb[])
 {
@@ -66,13 +88,11 @@ clock_time_t calc_new_time(struct neighbor n)
 {
     clock_time_t result = clock_time() - r*(clock_time() - n.this_neighbor_time);
     return result;
-    //return clock_time() * r * (clock_time() - n.this_neighbor_time);
 }
 
 /*-----------------------------------------------------*/
 // Neighborhood Discovery Phase
 /*-----------------------------------------------------*/
-static struct broadcastMessage tmSent;
 static void recv_bc(struct broadcast_conn *c, rimeaddr_t *from)
 {
     static struct broadcastMessage rsc_msg;
@@ -97,18 +117,8 @@ static void recv_bc(struct broadcast_conn *c, rimeaddr_t *from)
 
 /*-----------------------------------------------------*/
 static const struct broadcast_callbacks broadcast_callback = {recv_bc};
-static struct broadcast_conn bc;
 /*-----------------------------------------------------*/
-static struct etimer et;
-static struct broadcastMessage tmSent;
-static void timerCallback_turnOffLeds();
-static struct ctimer leds_off_timer_send;
 
-/* Timer callback turns off the blue led */
-static void timerCallback_turnOffLeds()
-{
-    leds_off(LEDS_ALL);
-}
 
 
 /*-----------------------------------------------------*/
