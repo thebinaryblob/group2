@@ -6,7 +6,7 @@
 \documentclass{llncs}
 %Use this line instead if you want to use running heads (i.e. headers on each page):
 %\documentclass[runningheads]{llncs}
-
+\usepackage{algorithm,algorithmic,amsmath,comment}
 
 \begin{document}
 \title{Rate-based Synchronous Diffusion}
@@ -16,7 +16,7 @@
 %and an alternative title for the table of contents:
 %\toctitle{table of contents title}
 
-\subtitle{Internet of Things, Group Project}
+\subtitle{Internet of Things}
 
 %For a single author
 %\author{Author Name}
@@ -31,10 +31,10 @@
 %\tocauthor{enhanced author name}
 
 %For a single institute
-%\institute{Institute Name \email{email address}}
+%\institute{University of Bern \email{email address}}
 
 % If authors are from different institutes 
-\institute{University of Bern \email{\{jovana.micic, david.boesiger\}@students.unibe.ch}}
+%\institute{University of Bern \email{\{jovana.micic, david.boesiger\}@students.unibe.ch}}
 
 %to remove your email just remove '\email{email address}'
 % you can also remove the thanks footnote by removing '\thanks{Thank you to...}'
@@ -46,20 +46,72 @@
 %abstract text goes here - Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
 %\end{abstract}
 
+\begin{comment}
+Protocol introduction: Maximum 1 page about the theoretical basics of the experiment.
+\end{comment}
 \section{Protocol Introduction}
+Very often time synhronization of all sensors is requred in Wireless Sensor Network (WSN). Since each node has its own clock, it is  needed to synchronize clocks in order to support synhronized sleep and duty cycles among nodes.
 
+ \textbf{Rate-Based Diffusion Protocol (RDP)} aims to synchronize the nodes in the network to the average value of the clocks in the network.
+Rate-Based Diffusion Protocol has two main phases:
+\begin{enumerate}
+\item  Neighborhood Discovery Phase
 
-Time Synchronization is important in every Wireless Sensor Network, that is because we are interestet in colaborative information. All actions perfomed by the node is controlled by its clock time which may differ from the clock time from other nodes. Since each node has its own clock, we need to synchronize the clock so we are able to get consitent information. Distributed synchronization protocols are required to coordinate the nodes in the network so that they
-follow the same reference frame. \textbf{Rate-Based Diffusion Protocol (RDP)} aims to synchronize the nodes in the network to the average value of the clocks in the
-network. Instead of the timing information, the difference between the clocks of
-the nodes and their relative importance is diffused in the network. Operation of the diffusion protocol is based on two things: comparison of the local clocks of two nodes
-and adjusting the clocks accordingly.
+In this phase, each node has to periodically broadcast a packet with its ID and sequence number to get to know neighbors. All recognized neighbords are saved in neighbor table. Additionaly, with each neighbor we have to save the time offset between the node's time and the neighbors times. Broadcast is determined by time the node waits after starting broadcasting. This parameter value will be discused later in further sections. 
 
+\item  Convergence Phase
+
+In covergence phase, each node periodically go throught neighbors table and update own time using following formula:
+\[t_i= t_i -  r * (t_i-t_j)\]
+Basic idea is to adapt time of the node to the neighbours node time using some r-value.
+R-value needs to be 0\textless r\textless 1. Results of choosing different r-values will be discused in further sections. 
+In this phase, unicast messages are used to determine the offset between the clocks.  
+\end{enumerate}
+\pagebreak 
+Alghoritm 1 is showing the pseudo code for Rate-based Diffusion Protocol. 
+\begin{algorithm}
+ \caption{Diffusion algorithm to synchronize the whole network}\label{euclid}
+  \begin{algorithmic}[1]
+    \STATE Do the following with some given frequency
+    \FOR{each sensor $n_i$ in the network}
+     \STATE Exchange clock times with $n_i$'s neighbors
+      \FOR{each neighbor $n_j$}
+        \STATE Let the time difference between $n_i$ and $n_j$ be $t_i$ - $t_j$
+        \STATE Change $n_i$'s time to $t_i$-$r_ij$($t_i$-$t_j$)
+      \ENDFOR
+    \ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\begin{comment}
+Methods: especially, describe the methods used to realize the protocol
+(functions in the code and their functionality).
+\end{comment}
 \section{Methods}
 
+
+\begin{comment}
+Experimental setup/Measurement procedure: The experimental setup, the
+differences of the experimental series, the different parameters used, including local
+sensor setup and TARWIS testbed.
+\end{comment}
 \section{Experimental setup/Measurement procedure}
 
+\begin{comment}
+Results and Analysis: Analyze the results which are obtained by local sensors and
+on TARWIS testbed. Analyze your data with respect to the aim of the experiment. Your
+task during the experiment is not just to measure and document your measurements, but
+to derive and present conclusions from your measurements.
+\end{comment}
+
 \section{Results and Analysis}
+
+\begin{comment}
+Conclusions: Summarize and discuss your results with respect to the literature or
+your own scientific expectations. You should in particular discuss possible error sources
+and give a short judgment on the quality of the experimental setup (because you also
+learn to design the measurement setups). If needed, suggest how to improve the setups.
+\end{comment}
 
 \section{Conclusions}
 
