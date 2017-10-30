@@ -15,8 +15,8 @@
 #define BROADCAST_CHANNEL 128
 #define RUNICAST_CHANNEL  120
 #define ARRAY_SIZE 40
-#define CLOCK_WAIT 20
-static uint16_t r = 0.5;
+#define CLOCK_WAIT 10
+static float r = 0.5;
 
 
 /* Datatype declaration */
@@ -99,6 +99,9 @@ static void add_neighbor(struct neighbor n, struct neighbor ntb[])
 clock_time_t calc_new_time(struct neighbor n)
 {
     clock_time_t result = clock_time() - r*(clock_time() - n.this_neighbor_time);
+    clock_time_t tmp = r*(clock_time() - n.this_neighbor_time);
+    // printf("TMP: %d", (int)tmp);
+    
     return result;
 }
 
