@@ -14,6 +14,7 @@
 #define BROADCAST_CHANNEL 128
 #define RUNICAST_CHANNEL  120
 #define ARRAY_SIZE 40
+#define CLOCK_WAIT 10*CLOCK_SECOND
 static uint16_t r = 0.5;
 
 
@@ -136,8 +137,9 @@ static void build_neighbor_table()
     static int i;
     static int f = 2;
     for(i = 0; i < f; i++) {
-        PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
-        etimer_reset(&et);
+        clock_wait(CLOCK_WAIT);
+        // PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
+        // etimer_reset(&et);
         tmSent.time = clock_time();
         tmSent.id = node_id;
         packetbuf_copyfrom(&tmSent, sizeof(tmSent));
@@ -150,8 +152,9 @@ static void build_neighbor_table()
         printf("Sent broadcast message from our own id: %d\n", node_id);
     }
     /* Wait for potential messages to come in. */
-    PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
-    etimer_reset(&et);
+    clock_wait(CLOCK_WAIT);
+    // PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
+    // etimer_reset(&et);
     printf("################################\n");
     printf("Phase 1 completed.\n");
     printf("################################\n");
@@ -232,8 +235,9 @@ contact_neighbors()
     printf("################################\n");
     while(1)
     {
-        PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&ef));
-        etimer_reset(&ef);
+        clock_wait(CLOCK_WAIT);
+        // PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&ef));
+        // etimer_reset(&ef);
         static int i;
         for(i = 0; i < array_occupied; i++)
         {
