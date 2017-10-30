@@ -209,43 +209,28 @@ static void timedout_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t r
 static const struct runicast_callbacks runicast_callbacks = {recv_runicast, sent_runicast, timedout_runicast};
 
 
-/* Send runicast to ever node in neighbor table */
-PROCESS(runicast_process, "runicast process");
-PROCESS_THREAD(runicast_process, ev, data)
+static void send_runicast(int node)
 {
-    PROCESS_BEGIN();
-    /* loop over neighbors */
-    static int i;
-    for(i = 0; i < array_occupied; i++)
-    {
-        /* wait for previouse runicast to finish */
-        while(runicast_is_transmitting(&runicast))
-        {
-            PROCESS_PAUSE();
-        }
 
-        rimeaddr_t addr;
-        addr.u8[0] = neighbor_table[i].id;
-        addr.u8[1] = 0;
+    rimeaddr_t addr;
+    addr.u8[0] = neighbor_table[node].id;
+    addr.u8[1] = 0;
 
-        /* compose and send message */
-        struct unicastMessage msg;
-        msg.time = clock_time();
-        msg.answer_expected = 1;
-        msg.id = node_id;
-        packetbuf_copyfrom(&msg, sizeof(msg));
-        runicast_send(&runicast, &addr, MAX_RETRANSMISSIONS);
+    /* compose and send message */
+    struct unicastMessage msg;
+    msg.time = clock_time();
+    msg.answer_expected = 1;
+    msg.id = node_id;
+    packetbuf_copyfrom(&msg, sizeof(msg));
+    runicast_send(&runicast, &addr, MAX_RETRANSMISSIONS);
 
-        /* Note when we send to the neighbor */
-        neighbor_table[i].last_sent = clock_time();
+    /* Note when we send to the neighbor */
+    neighbor_table[node].last_sent = clock_time();
 
-        /* turn on and of green led */
-        leds_on(LEDS_GREEN);
-        printf("#### Sending Runicast to %d ####\n", (int)addr.u8[0]);
-        ctimer_set(&leds_off_timer_send, CLOCK_SECOND, timerCallback_turnOffLeds, NULL);
-    }
-
-    PROCESS_END();
+    /* turn on and of green led */
+    leds_on(LEDS_GREEN);
+    printf("#### Sending Runicast to %d ####\n", (int)addr.u8[0]);
+    ctimer_set(&leds_off_timer_send, CLOCK_SECOND, timerCallback_turnOffLeds, NULL);
 }
 
 /*-----------------------------------------------------*/
@@ -277,7 +262,17 @@ PROCESS_THREAD(main_process, ev, data)
         etimer_reset(&ef);
 
         // Time adjustment using runicast
-        process_start(&runicast_process, NULL);
+        /* loop over neighbors */
+        static int i;
+        for(i = 0; i < array_occupied; i++)
+        {
+            /* wait for previouse runicast to finish */
+            while(runicast_is_transmitting(&runicast))
+            {
+                PROCESS_PAUSE();
+            }
+            send_runicast(i);
+        }
         // Wait, then start again
         PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&ef));
         etimer_reset(&ef);
