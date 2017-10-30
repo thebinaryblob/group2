@@ -138,9 +138,6 @@ static void build_neighbor_table()
     static int i;
     static int f = 2;
     for(i = 0; i < f; i++) {
-        clock_wait(CLOCK_WAIT);
-        // PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
-        // etimer_reset(&et);
         tmSent.time = clock_time();
         tmSent.id = node_id;
         packetbuf_copyfrom(&tmSent, sizeof(tmSent));
@@ -149,11 +146,9 @@ static void build_neighbor_table()
 
         /* turn on and of blue led */
         leds_on(LEDS_BLUE);
-        ctimer_set(&leds_off_timer_send, CLOCK_SECOND, timerCallback_turnOffLeds, NULL);
         printf("Sent broadcast message from our own id: %d\n", node_id);
+        leds_off(LEDS_BLUE);
     }
-    /* Wait for potential messages to come in. */
-    clock_wait(CLOCK_WAIT);
     // PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
     // etimer_reset(&et);
     printf("################################\n");
@@ -228,22 +223,24 @@ static void timedout_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t r
 static const struct runicast_callbacks runicast_callbacks = {recv_runicast, sent_runicast, timedout_runicast};
 
 
-contact_neighbors()
+static void contact_neighbors()
 {
     etimer_set(&ef, 20*CLOCK_SECOND);
 
     printf("################################\n");
     printf("Start sending runicast messages.\n");
     printf("################################\n");
-    while(1)
+    static int a;
+    static int b = 2;
+    for(a = 0; a < b; a++)
     {
-        clock_wait(CLOCK_WAIT);
+        // clock_wait(CLOCK_WAIT);
         // PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&ef));
         // etimer_reset(&ef);
         static int i;
         for(i = 0; i < array_occupied; i++)
         {
-            runicast_open(&runicast, RUNICAST_CHANNEL, &runicast_callbacks);
+            printf("#### You are here ####\n");
             rimeaddr_t addr;
             addr.u8[0] = neighbor_table[i].id;
             addr.u8[1] = 0;
@@ -277,15 +274,25 @@ PROCESS_THREAD(main_process, ev, data)
 {
     // Gracefully close the communication channels at the end
     PROCESS_EXITHANDLER(runicast_close(&runicast); broadcast_close(&bc);)
-    PROCESS_BEGIN()
+    PROCESS_BEGIN();
+
     // Open the communication channels to be able to send/receive packets
     runicast_open(&runicast, RUNICAST_CHANNEL, &runicast_callbacks);
     broadcast_open(&bc, BROADCAST_CHANNEL, &broadcast_callback);
-    // Neighborhood Discovery Phase with broadcast
-    build_neighbor_table();
-    // Time adjustment using runicast
-    contact_neighbors();
 
-    PROCESS_END()
+    etimer_set(&ef, 20*CLOCK_SECOND);
+
+    while(1)
+    {
+        // Neighborhood Discovery Phase with broadcast
+        build_neighbor_table();
+        // Time adjustment using runicast
+        contact_neighbors();
+        // Wait, then start again
+        PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&ef));
+        etimer_reset(&ef);
+    }
+
+    PROCESS_END();
 }
 AUTOSTART_PROCESSES(&main_process);
