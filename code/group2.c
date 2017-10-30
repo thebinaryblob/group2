@@ -40,7 +40,7 @@ struct neighbor {
 
 /* Variable declaration */
 static struct neighbor neighbor_table[ARRAY_SIZE];
-static struct etimer et, ef;
+static struct etimer ef;
 static struct ctimer leds_off_timer_send;
 static int array_occupied; /* Number of elements in array */
 static struct broadcastMessage tmSent;
@@ -95,12 +95,14 @@ static void add_neighbor(struct neighbor n, struct neighbor ntb[])
     array_occupied++;
 }
 
+/* Return time difference with neighbor n */
 clock_time_t calc_new_time(struct neighbor n)
 {
     clock_time_t result = clock_time() - r*(clock_time() - n.this_neighbor_time);
     return result;
 }
 
+/* Broadcast receiver, builds neighbor table */
 static void recv_bc(struct broadcast_conn *c, rimeaddr_t *from)
 {
     static struct broadcastMessage rsc_msg;
@@ -124,7 +126,8 @@ static void recv_bc(struct broadcast_conn *c, rimeaddr_t *from)
 }
 static const struct broadcast_callbacks broadcast_callback = {recv_bc};
 
-static void build_neighbor_table()
+/* Send broadcast */
+static void send_broadcast()
 {
     /* compose and send message */
     tmSent.time = clock_time();
@@ -139,6 +142,7 @@ static void build_neighbor_table()
 }
 
 
+/* Runicast receiver. Calculate time difference */
 static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seqno)
 {
     struct unicastMessage runmsg_received;
@@ -203,6 +207,7 @@ static void timedout_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t r
 static const struct runicast_callbacks runicast_callbacks = {recv_runicast, sent_runicast, timedout_runicast};
 
 
+/* Send runicast to ever node in neighbor table */
 static void contact_neighbors()
 {
     /* loop over neighbors */
@@ -254,7 +259,7 @@ PROCESS_THREAD(main_process, ev, data)
     while(1)
     {
         // Neighborhood Discovery Phase with broadcast
-        build_neighbor_table();
+        send_broadcast();
         // Wait for callback
         PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&ef));
         etimer_reset(&ef);
@@ -264,6 +269,8 @@ PROCESS_THREAD(main_process, ev, data)
         // Wait, then start again
         PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&ef));
         etimer_reset(&ef);
+
+        // Todo: Evaluation
     }
 
     PROCESS_END();
