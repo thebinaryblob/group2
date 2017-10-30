@@ -15,6 +15,7 @@
 #define BROADCAST_CHANNEL 128
 #define RUNICAST_CHANNEL  120
 #define ARRAY_SIZE 40
+#define CLOCK_WAIT 20
 static uint16_t r = 0.5;
 
 
@@ -247,7 +248,7 @@ PROCESS_THREAD(main_process, ev, data)
     broadcast_open(&bc, BROADCAST_CHANNEL, &broadcast_callback);
 
     // Set timer
-    etimer_set(&ef, 20*CLOCK_SECOND);
+    etimer_set(&ef, CLOCK_WAIT*CLOCK_SECOND);
 
     // Check if all nodes are running the same code
     printf("Running program version %d.\n", VERSION);
