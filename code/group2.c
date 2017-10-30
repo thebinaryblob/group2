@@ -52,14 +52,14 @@ static void timerCallback_turnOffLeds();
 static int find_neighbor(struct neighbor n, struct neighbor ntb[]);
 // Broadcast
 static void recv_bc(struct broadcast_conn *c, rimeaddr_t *from);
-static const struct broadcast_callbacks broadcast_callback = {recv_bc};
+static const struct broadcast_callbacks broadcast_callback;
 // Runicast
 static struct runicast_conn runicast;
 static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seqno);
 static void sent_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retransmissions);
 static void timedout_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retransmissions);
 static void sent_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retransmissions);
-static const struct runicast_callbacks runicast_callbacks = {recv_runicast, sent_runicast, timedout_runicast};
+static const struct runicast_callbacks runicast_callbacks;
 
 /* Function definition */
 
@@ -122,6 +122,7 @@ static void recv_bc(struct broadcast_conn *c, rimeaddr_t *from)
     }
 
 }
+static const struct broadcast_callbacks broadcast_callback = {recv_bc};
 
 static void build_neighbor_table()
 {
@@ -191,7 +192,7 @@ static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seq
     else
     {
         printf("No answer required. Computing rtt.\n");
-        // rtt 
+        // rtt
         struct neighbor n;
         n.id = runmsg_received.id;
         int neighbor_positon = find_neighbor(n, neighbor_table);
@@ -224,6 +225,7 @@ static void timedout_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t r
 {
     printf("runicast message timed out when sending to %d.%d, retransmissions %d\n", to->u8[0], to->u8[1], retransmissions);
 }
+static const struct runicast_callbacks runicast_callbacks = {recv_runicast, sent_runicast, timedout_runicast};
 
 
 contact_neighbors()
