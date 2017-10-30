@@ -205,12 +205,20 @@ static const struct runicast_callbacks runicast_callbacks = {recv_runicast, sent
 
 
 /* Send runicast to ever node in neighbor table */
-static void contact_neighbors()
+PROCESS(runicast_process, "runicast process");
+PROCESS_THREAD(runicast_process, ev, data)
 {
+    PROCESS_BEGIN();
     /* loop over neighbors */
     static int i;
     for(i = 0; i < array_occupied; i++)
     {
+        /* wait for previouse runicast to finish */
+        while(runicast_is_transmitting(&runicast))
+        {
+            PROCESS_PAUSE();
+        }
+
         rimeaddr_t addr;
         addr.u8[0] = neighbor_table[i].id;
         addr.u8[1] = 0;
@@ -231,6 +239,8 @@ static void contact_neighbors()
         printf("#### Sending Runicast to %d ####\n", (int)addr.u8[0]);
         ctimer_set(&leds_off_timer_send, CLOCK_SECOND, timerCallback_turnOffLeds, NULL);
     }
+
+    PROCESS_END();
 }
 
 /*-----------------------------------------------------*/
@@ -262,7 +272,8 @@ PROCESS_THREAD(main_process, ev, data)
         etimer_reset(&ef);
 
         // Time adjustment using runicast
-        contact_neighbors();
+        // contact_neighbors();
+        process_start(&runicast_process, NULL);
         // Wait, then start again
         PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&ef));
         etimer_reset(&ef);
