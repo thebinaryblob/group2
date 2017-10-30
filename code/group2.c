@@ -49,6 +49,16 @@ static void timerCallback_turnOffLeds();
 /* Function declaration */
 static void timerCallback_turnOffLeds();
 static int find_neighbor(struct neighbor n, struct neighbor ntb[]);
+// Broadcast
+static void recv_bc(struct broadcast_conn *c, rimeaddr_t *from);
+static const struct broadcast_callbacks broadcast_callback = {recv_bc};
+// Runicast
+static struct runicast_conn runicast;
+static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seqno);
+static void sent_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retransmissions);
+static void timedout_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retransmissions);
+static void sent_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retransmissions);
+static const struct runicast_callbacks runicast_callbacks = {recv_runicast, sent_runicast, timedout_runicast};
 
 /* Function definition */
 
@@ -90,9 +100,6 @@ clock_time_t calc_new_time(struct neighbor n)
     return result;
 }
 
-/*-----------------------------------------------------*/
-// Neighborhood Discovery Phase
-/*-----------------------------------------------------*/
 static void recv_bc(struct broadcast_conn *c, rimeaddr_t *from)
 {
     static struct broadcastMessage rsc_msg;
@@ -115,28 +122,13 @@ static void recv_bc(struct broadcast_conn *c, rimeaddr_t *from)
 
 }
 
-/*-----------------------------------------------------*/
-static const struct broadcast_callbacks broadcast_callback = {recv_bc};
-/*-----------------------------------------------------*/
-
-
-
-/*-----------------------------------------------------*/
-PROCESS(broadcast_process, "broadcast process");
-PROCESS(runicast_process, "runicast process");
-/*-----------------------------------------------------*/
-
-PROCESS_THREAD(broadcast_process, ev, data)
+static void build_neighbor_table()
 {
 
-    /* Close broadcast and start unicast when thread ends */
-    PROCESS_EXITHANDLER(broadcast_close(&bc);)
-    PROCESS_BEGIN();
     printf("################################\n");
     printf("Phase 1 started.\n");
     printf("################################\n");
 
-    broadcast_open(&bc, BROADCAST_CHANNEL, &broadcast_callback);
     /* Broadcast every 10 seconds */
     etimer_set(&et, 10*CLOCK_SECOND);
 
@@ -163,15 +155,9 @@ PROCESS_THREAD(broadcast_process, ev, data)
     printf("################################\n");
     printf("Phase 1 completed.\n");
     printf("################################\n");
-    PROCESS_END();
-
 }
 
 
-/*-----------------------------------------------------*/
-// Everything unicast
-/*-----------------------------------------------------*/
-static struct runicast_conn runicast;
 static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seqno)
 {
     struct unicastMessage runmsg_received;
@@ -227,9 +213,6 @@ static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seq
     }
 }
 
-static void sent_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retransmissions);
-static void timedout_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retransmissions); 
-static const struct runicast_callbacks runicast_callbacks = {recv_runicast, sent_runicast, timedout_runicast};
 static void sent_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retransmissions)
 {
     printf("runicast message sent to %d.%d, retransmissions %d\n", to->u8[0], to->u8[1], retransmissions);
@@ -240,10 +223,8 @@ static void timedout_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t r
 }
 
 
-PROCESS_THREAD(runicast_process, ev, data)
+contact_neighbors()
 {
-    PROCESS_EXITHANDLER(runicast_close(&runicast);)
-    PROCESS_BEGIN();
     etimer_set(&ef, 20*CLOCK_SECOND);
 
     printf("################################\n");
@@ -251,8 +232,6 @@ PROCESS_THREAD(runicast_process, ev, data)
     printf("################################\n");
     while(1)
     {
-        /* Let broadcast finish first */
-        PROCESS_PAUSE();
         PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&ef));
         etimer_reset(&ef);
         static int i;
@@ -277,27 +256,30 @@ PROCESS_THREAD(runicast_process, ev, data)
 
         }
     }
-
-    PROCESS_END();
-
 }
 
-
-AUTOSTART_PROCESSES(&broadcast_process, &runicast_process);
-// Send broadcast with timestamp x
-// Receive unicast with timestamp x
-// Compare x to local time y => Set up neighbours
-// Reply to broadcast with uncast and my ID
-// Repeat every n minus
-
-/*-----------------------------------------------------*/
-// Convergence Phase
-/*-----------------------------------------------------*/
-
-// Loop over neighbours
-// Adjust local time accordingly
-// Implement algorithms from page 8
 
 /*-----------------------------------------------------*/
 // Evaluation
 /*-----------------------------------------------------*/
+
+/*-----------------------------------------------------*/
+// Main Process
+/*-----------------------------------------------------*/
+PROCESS(main_process, "Main process");
+PROCESS_THREAD(main_process, ev, data)
+{
+    // Gracefully close the communication channels at the end
+    PROCESS_EXITHANDLER(runicast_close(&runicast); broadcast_close(&bc);)
+    PROCESS_BEGIN()
+    // Open the communication channels to be able to send/receive packets
+    runicast_open(&runicast, RUNICAST_CHANNEL, &runicast_callbacks);
+    broadcast_open(&bc, BROADCAST_CHANNEL, &broadcast_callback);
+    // Neighborhood Discovery Phase with broadcast
+    build_neighbor_table();
+    // Time adjustment using runicast
+    contact_neighbors();
+
+    PROCESS_END()
+}
+AUTOSTART_PROCESSES(&main_process);
