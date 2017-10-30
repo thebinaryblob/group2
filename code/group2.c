@@ -10,7 +10,7 @@
 #include "sys/rtimer.h" /* for timestamps */
 
 /* constants */
-#define VERSION 0.1
+#define VERSION 1
 #define MAX_RETRANSMISSIONS 4
 #define BROADCAST_CHANNEL 128
 #define RUNICAST_CHANNEL  120
@@ -106,8 +106,8 @@ static void recv_bc(struct broadcast_conn *c, rimeaddr_t *from)
     static struct broadcastMessage rsc_msg;
     packetbuf_copyto(&rsc_msg);
 
-    printf("Broadcast: Received time %d from %d.%d\n",
-            (uint16_t)rsc_msg.time, from->u8[0], from->u8[1]);
+    printf("#### Receiving Broadcast from node %d ####\n", from->u8[0]);
+    printf("Broadcast: Received time %d from %d.%d\n", (uint16_t)rsc_msg.time, from->u8[0], from->u8[1]);
 
     leds_on(LEDS_RED);
     ctimer_set(&leds_off_timer_send, CLOCK_SECOND, timerCallback_turnOffLeds, NULL);
@@ -126,34 +126,16 @@ static const struct broadcast_callbacks broadcast_callback = {recv_bc};
 
 static void build_neighbor_table()
 {
+    /* compose and send message */
+    tmSent.time = clock_time();
+    tmSent.id = node_id;
+    packetbuf_copyfrom(&tmSent, sizeof(tmSent));
+    broadcast_send(&bc);
 
-    printf("################################\n");
-    printf("Phase 1 started.\n");
-    printf("################################\n");
-
-    /* Broadcast every 10 seconds */
-    etimer_set(&et, 10*CLOCK_SECOND);
-
-    /* Run for n times */
-    static int i;
-    static int f = 2;
-    for(i = 0; i < f; i++) {
-        tmSent.time = clock_time();
-        tmSent.id = node_id;
-        packetbuf_copyfrom(&tmSent, sizeof(tmSent));
-        /* send the packet */
-        broadcast_send(&bc);
-
-        /* turn on and of blue led */
-        leds_on(LEDS_BLUE);
-        printf("Sent broadcast message from our own id: %d\n", node_id);
-        leds_off(LEDS_BLUE);
-    }
-    // PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
-    // etimer_reset(&et);
-    printf("################################\n");
-    printf("Phase 1 completed.\n");
-    printf("################################\n");
+    /* turn on and of blue led */
+    leds_on(LEDS_BLUE);
+    printf("#### Sending Broadcast from node %d ####\n", node_id);
+    ctimer_set(&leds_off_timer_send, CLOCK_SECOND, timerCallback_turnOffLeds, NULL);
 }
 
 
@@ -162,15 +144,13 @@ static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seq
     struct unicastMessage runmsg_received;
     packetbuf_copyto(&runmsg_received);
 
-    printf("RUNICAST: Received message from %d.%d\n",
-            from->u8[0], from->u8[1]);
+    printf("#### Receiving Runicast from node %d ####\n", from->u8[0]);
+    printf("RUNICAST: Received message from %d.%d\n", from->u8[0], from->u8[1]);
 
     leds_on(LEDS_GREEN);
     ctimer_set(&leds_off_timer_send, CLOCK_SECOND, timerCallback_turnOffLeds, NULL);
     if(runmsg_received.answer_expected == 1)
     {
-        // runicast_open(&runicast, RUNICAST_CHANNEL, &runicast_callbacks);
-
         printf("Answering to %d.\n", runmsg_received.id);
         struct unicastMessage reply_msg;
         reply_msg.id = node_id;
@@ -225,46 +205,31 @@ static const struct runicast_callbacks runicast_callbacks = {recv_runicast, sent
 
 static void contact_neighbors()
 {
-    etimer_set(&ef, 20*CLOCK_SECOND);
-
-    printf("################################\n");
-    printf("Start sending runicast messages.\n");
-    printf("################################\n");
-    static int a;
-    static int b = 2;
-    for(a = 0; a < b; a++)
+    /* loop over neighbors */
+    static int i;
+    for(i = 0; i < array_occupied; i++)
     {
-        // clock_wait(CLOCK_WAIT);
-        // PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&ef));
-        // etimer_reset(&ef);
-        static int i;
-        for(i = 0; i < array_occupied; i++)
-        {
-            printf("#### You are here ####\n");
-            rimeaddr_t addr;
-            addr.u8[0] = neighbor_table[i].id;
-            addr.u8[1] = 0;
+        rimeaddr_t addr;
+        addr.u8[0] = neighbor_table[i].id;
+        addr.u8[1] = 0;
 
-            struct unicastMessage msg;
-            msg.time = clock_time();
-            msg.answer_expected = 1;
-            msg.id = node_id;
+        /* compose and send message */
+        struct unicastMessage msg;
+        msg.time = clock_time();
+        msg.answer_expected = 1;
+        msg.id = node_id;
+        packetbuf_copyfrom(&msg, sizeof(msg));
+        runicast_send(&runicast, &addr, MAX_RETRANSMISSIONS);
 
-            /* Note when we send to the neighbor */
-            neighbor_table[i].last_sent = clock_time();
+        /* Note when we send to the neighbor */
+        neighbor_table[i].last_sent = clock_time();
 
-            printf("Sending runicast to %d.\n", (int)addr.u8[0]);
-            packetbuf_copyfrom(&msg, sizeof(msg));
-            runicast_send(&runicast, &addr, MAX_RETRANSMISSIONS);
-
-        }
+        /* turn on and of green led */
+        leds_on(LEDS_GREEN);
+        printf("#### Sending Runicast to %d ####\n", (int)addr.u8[0]);
+        ctimer_set(&leds_off_timer_send, CLOCK_SECOND, timerCallback_turnOffLeds, NULL);
     }
 }
-
-
-/*-----------------------------------------------------*/
-// Evaluation
-/*-----------------------------------------------------*/
 
 /*-----------------------------------------------------*/
 // Main Process
@@ -280,15 +245,20 @@ PROCESS_THREAD(main_process, ev, data)
     runicast_open(&runicast, RUNICAST_CHANNEL, &runicast_callbacks);
     broadcast_open(&bc, BROADCAST_CHANNEL, &broadcast_callback);
 
+    // Set timer
     etimer_set(&ef, 20*CLOCK_SECOND);
 
     // Check if all nodes are running the same code
-    printf("Running program version %f.\n", VERSION);
+    printf("Running program version %d.\n", VERSION);
 
     while(1)
     {
         // Neighborhood Discovery Phase with broadcast
         build_neighbor_table();
+        // Wait for callback
+        PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&ef));
+        etimer_reset(&ef);
+
         // Time adjustment using runicast
         contact_neighbors();
         // Wait, then start again
