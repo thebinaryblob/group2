@@ -8,7 +8,6 @@
 #include "node-id.h" /* fro node_id */
 #include <stdio.h> /* for printing */
 #include "sys/rtimer.h" /* for timestamps */
-#include "clock.c"
 
 /* constants */
 #define VERSION 1
@@ -192,7 +191,7 @@ static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seq
         printf("Old time: %d.\n", (uint16_t)clock_time());
         printf("New time: %d.\n", (uint16_t)newtime);
         /* use function in ../../cpu/msp430/f1xxx/clock.c */
-        clock_set_group2(newtime);
+        clock_set(newtime);
         // clock_set_seconds(newtime);
         printf("Set time: %d.\n", (uint16_t)clock_time());
         printf("###############################################\n");
@@ -264,6 +263,7 @@ PROCESS_THREAD(main_process, ev, data)
     broadcast_open(&bc, BROADCAST_CHANNEL, &broadcast_callback);
 
     // Set timer
+    etimer_set(&ef, CLOCK_WAIT*CLOCK_SECOND);
 
     // Check if all nodes are running the same code
     printf("Running program version %d.\n", VERSION);
@@ -273,17 +273,14 @@ PROCESS_THREAD(main_process, ev, data)
         // Neighborhood Discovery Phase with broadcast
         send_broadcast();
         // Wait for callback
-        etimer_set(&ef, CLOCK_WAIT*CLOCK_SECOND);
         PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&ef));
-        // etimer_reset(&ef);
+        etimer_reset(&ef);
 
         // Time adjustment using runicast
-        // contact_neighbors();
         process_start(&runicast_process, NULL);
         // Wait, then start again
-        etimer_set(&ef, CLOCK_WAIT*CLOCK_SECOND);
         PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&ef));
-        // etimer_reset(&ef);
+        etimer_reset(&ef);
 
         // Todo: Evaluation
     }
