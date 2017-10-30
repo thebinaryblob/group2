@@ -22,19 +22,19 @@ static uint16_t r = 0.5;
 /* Datatype declaration */
 struct broadcastMessage {
     int id;
-    clock_time_t time;
+    long time;
 };
 
 struct unicastMessage {
     int id;
-    clock_time_t time;
+    long time;
     int answer_expected;
 };
 
 struct neighbor {
     int id;
-    clock_time_t this_neighbor_time;
-    clock_time_t last_sent; // Is 0 if not used
+    long this_neighbor_time;
+    long last_sent; // Is 0 if not used
 };
 
 
@@ -96,9 +96,9 @@ static void add_neighbor(struct neighbor n, struct neighbor ntb[])
 }
 
 /* Return time difference with neighbor n */
-clock_time_t calc_new_time(struct neighbor n)
+long calc_new_time(struct neighbor n)
 {
-    clock_time_t result = clock_time() - r*(clock_time() - n.this_neighbor_time);
+    long result = clock_seconds() - r*(clock_seconds() - n.this_neighbor_time);
     return result;
 }
 
@@ -129,7 +129,7 @@ static const struct broadcast_callbacks broadcast_callback = {recv_bc};
 static void send_broadcast()
 {
     /* compose and send message */
-    tmSent.time = clock_time();
+    tmSent.time = clock_seconds();
     tmSent.id = node_id;
     packetbuf_copyfrom(&tmSent, sizeof(tmSent));
     broadcast_send(&bc);
@@ -155,7 +155,7 @@ static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seq
         //printf("Answering to %d.\n", runmsg_received.id);
         struct unicastMessage reply_msg;
         reply_msg.id = node_id;
-        reply_msg.time = clock_time();
+        reply_msg.time = clock_seconds();
         reply_msg.answer_expected = 0;
 
         rimeaddr_t addr;
@@ -172,23 +172,23 @@ static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seq
         struct neighbor n;
         n.id = runmsg_received.id;
         int neighbor_positon = find_neighbor(n, neighbor_table);
-        clock_time_t rtt = clock_time() - neighbor_table[neighbor_positon].last_sent;
+        long rtt = clock_seconds() - neighbor_table[neighbor_positon].last_sent;
         printf("RTT for neighbor %d is %d.\n", n.id, (uint16_t)rtt);
 
-        clock_time_t this_neighbor_time = runmsg_received.time + rtt/2;
+        long this_neighbor_time = runmsg_received.time + rtt/2;
         //printf("This this_neighbor_time is %d.\n", (uint16_t)this_neighbor_time);
-        //printf("Our time is %d.\n", (uint16_t)clock_time());
+        //printf("Our time is %d.\n", (uint16_t)clock_seconds());
 
         /* Update neighbor time in array */
         neighbor_table[neighbor_positon].this_neighbor_time = this_neighbor_time;
 
         /* Adjust for time drift and update our local time */
-        clock_time_t newtime = calc_new_time(neighbor_table[neighbor_positon]);
+        long newtime = calc_new_time(neighbor_table[neighbor_positon]);
         printf("###############################################\n");
-        printf("Old time: %d.\n", (uint16_t)clock_time());
+        printf("Old time: %d.\n", (uint16_t)clock_seconds());
         printf("New time: %d.\n", (uint16_t)newtime);
         clock_set_seconds(newtime);
-        printf("Set time: %d.\n", (uint16_t)clock_time());
+        printf("Set time: %d.\n", (uint16_t)clock_seconds());
         printf("###############################################\n");
     }
 }
@@ -225,14 +225,14 @@ PROCESS_THREAD(runicast_process, ev, data)
 
         /* compose and send message */
         struct unicastMessage msg;
-        msg.time = clock_time();
+        msg.time = clock_seconds();
         msg.answer_expected = 1;
         msg.id = node_id;
         packetbuf_copyfrom(&msg, sizeof(msg));
         runicast_send(&runicast, &addr, MAX_RETRANSMISSIONS);
 
         /* Note when we send to the neighbor */
-        neighbor_table[i].last_sent = clock_time();
+        neighbor_table[i].last_sent = clock_seconds();
 
         /* turn on and of green led */
         leds_on(LEDS_GREEN);
