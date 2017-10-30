@@ -10,6 +10,7 @@
 #include "sys/rtimer.h" /* for timestamps */
 
 /* constants */
+#define VERSION 0.1
 #define MAX_RETRANSMISSIONS 4
 #define BROADCAST_CHANNEL 128
 #define RUNICAST_CHANNEL  120
@@ -19,7 +20,6 @@ static uint16_t r = 0.5;
 
 
 /* Datatype declaration */
-
 struct broadcastMessage {
     int id;
     clock_time_t time;
@@ -281,6 +281,9 @@ PROCESS_THREAD(main_process, ev, data)
     broadcast_open(&bc, BROADCAST_CHANNEL, &broadcast_callback);
 
     etimer_set(&ef, 20*CLOCK_SECOND);
+
+    // Check if all nodes are running the same code
+    printf("Running program version %f.\n", VERSION);
 
     while(1)
     {
