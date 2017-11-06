@@ -1,4 +1,8 @@
 /* Group project IoT 2017 */
+// TODO:
+// - RTT can be negativ because we use time.now() befor and after resetting our clock time.
+// - Iterations stop after 3-5 turns when 3+ nodes are used. Debug.
+// - Print output to tarwis to get information about our experiments
 
 #include "contiki.h"
 #include "net/rime.h" /* for runicast */
@@ -10,13 +14,14 @@
 #include "sys/rtimer.h" /* for timestamps */
 
 /* constants */
-#define DEBUG 1 // Use to toggle debug messages
 #define MAX_RETRANSMISSIONS 4
 #define BROADCAST_CHANNEL 128
 #define RUNICAST_CHANNEL  120
 #define ARRAY_SIZE 40 // Numer of nodes in cluster
 #define CLOCK_WAIT 10
 static float r = 0.5;
+static int debug = 1; // Use to toggle debug messages
+static int rc_wait_reply = 0; // Wait until we receive a message
 
 
 /* Datatype declaration */
@@ -83,11 +88,11 @@ static int find_neighbor(struct neighbor n, struct neighbor ntb[])
     {
         if (ntb[i].id == n.id)
         {
-            if(DEBUG){printf("Found neighbor at position %d.\n", i);}
+            if(debug){printf("Found neighbor at position %d.\n", i);}
             return i;
         }
     }
-    if(DEBUG){printf("Neighbor not found in array.\n");}
+    if(debug){printf("Neighbor not found in array.\n");}
     return -1;
 }
 
@@ -95,7 +100,7 @@ static int find_neighbor(struct neighbor n, struct neighbor ntb[])
 /* Add neighbor to array and increasea index */
 static void add_neighbor(struct neighbor n, struct neighbor ntb[])
 {
-    if(DEBUG){printf("Add new neighbor with id %d to array at position %d.\n", n.id, array_occupied);}
+    if(debug){printf("Add new neighbor with id %d to array at position %d.\n", n.id, array_occupied);}
     ntb[array_occupied] = n;
     array_occupied++;
 }
@@ -113,7 +118,7 @@ static void recv_bc(struct broadcast_conn *c, rimeaddr_t *from)
     static struct broadcastMessage rsc_msg;
     packetbuf_copyto(&rsc_msg);
 
-    if(DEBUG){printf("#### Receiving Broadcast from node %d ####\n", from->u8[0]);}
+    if(debug){printf("#### Receiving Broadcast from node %d ####\n", from->u8[0]);}
 
     leds_on(LEDS_RED);
     ctimer_set(&leds_off_timer_send, CLOCK_SECOND, timerCallback_turnOffLeds, NULL);
@@ -141,7 +146,7 @@ static void send_broadcast()
 
     /* turn on and of blue led */
     leds_on(LEDS_BLUE);
-    if(DEBUG){printf("#### Node %d: Sending Broadcast ####\n", node_id);}
+    if(debug){printf("#### Node %d: Sending Broadcast ####\n", node_id);}
     ctimer_set(&leds_off_timer_send, CLOCK_SECOND, timerCallback_turnOffLeds, NULL);
 }
 
@@ -152,12 +157,12 @@ static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seq
     struct unicastMessage runmsg_received;
     packetbuf_copyto(&runmsg_received);
 
-    if(DEBUG){printf("#### Receiving Runicast from node %d ####\n", from->u8[0]);}
+    if(debug){printf("#### Receiving Runicast from node %d ####\n", from->u8[0]);}
     leds_on(LEDS_GREEN);
     ctimer_set(&leds_off_timer_send, CLOCK_SECOND, timerCallback_turnOffLeds, NULL);
     if(runmsg_received.answer_expected == 1)
     {
-        if(DEBUG){printf("Answering to %d.\n", runmsg_received.id);}
+        if(debug){printf("Answering to %d.\n", runmsg_received.id);}
         struct unicastMessage reply_msg;
         reply_msg.id = node_id;
         reply_msg.time = clock_time();
@@ -172,39 +177,47 @@ static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seq
     }
     else
     {
-        if(DEBUG){printf("No answer required. Computing rtt.\n");}
+        if(debug){printf("No answer required. Computing rtt.\n");}
         // rtt
         struct neighbor n;
         n.id = runmsg_received.id;
         int neighbor_positon = find_neighbor(n, neighbor_table);
         clock_time_t rtt = clock_time() - neighbor_table[neighbor_positon].last_sent;
-        if(DEBUG){printf("RTT for neighbor %d is %d.\n", n.id, (uint16_t)rtt);}
+
+        // rtt can be negativ (bug) lets make sure it is positive for now
+        if((uint16_t)rtt < 0)
+        {
+            rtt = 1;
+        }
+        if(debug){printf("RTT for neighbor %d is %d.\n", n.id, (uint16_t)rtt);}
 
         clock_time_t this_neighbor_time = runmsg_received.time + rtt/2;
-        //if(DEBUG){printf("This this_neighbor_time is %d.\n", (uint16_t)this_neighbor_time);}
-        //if(DEBUG){printf("Our time is %d.\n", (uint16_t)clock_time());}
+        //if(debug){printf("This this_neighbor_time is %d.\n", (uint16_t)this_neighbor_time);}
+        //if(debug){printf("Our time is %d.\n", (uint16_t)clock_time());}
 
         /* Update neighbor time in array */
         neighbor_table[neighbor_positon].this_neighbor_time = this_neighbor_time;
 
         /* Adjust for time drift and update our local time */
         clock_time_t newtime = calc_new_time(neighbor_table[neighbor_positon]);
-        if(DEBUG){printf("###############################################\n");}
-        if(DEBUG){printf("Old time: %d.\n", (uint16_t)clock_time());}
-        if(DEBUG){printf("New time: %d.\n", (uint16_t)newtime);}
+        if(debug){printf("###############################################\n");}
+        if(debug){printf("Old time: %d.\n", (uint16_t)clock_time());}
+        if(debug){printf("New time: %d.\n", (uint16_t)newtime);}
         clock_set(newtime);
         printf("Set time for node %d: %d.\n", node_id, (uint16_t)clock_time());
-        if(DEBUG){printf("###############################################\n");}
+        if(debug){printf("###############################################\n");}
+        rc_wait_reply = 0;
+        if(debug){printf("Received reply. Ready to send next runicast.\n");}
     }
 }
 
 static void sent_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retransmissions)
 {
-    if(DEBUG){printf("runicast message sent to %d.%d, retransmissions %d\n", to->u8[0], to->u8[1], retransmissions);}
+    if(debug){printf("runicast message sent to %d.%d, retransmissions %d\n", to->u8[0], to->u8[1], retransmissions);}
 }
 static void timedout_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retransmissions)
 {
-    if(DEBUG){printf("runicast message timed out when sending to %d.%d, retransmissions %d\n", to->u8[0], to->u8[1], retransmissions);}
+    if(debug){printf("runicast message timed out when sending to %d.%d, retransmissions %d\n", to->u8[0], to->u8[1], retransmissions);}
 }
 static const struct runicast_callbacks runicast_callbacks = {recv_runicast, sent_runicast, timedout_runicast};
 
@@ -212,6 +225,7 @@ static const struct runicast_callbacks runicast_callbacks = {recv_runicast, sent
 static void send_runicast(int node)
 {
 
+    rc_wait_reply = 1;
     rimeaddr_t addr;
     addr.u8[0] = neighbor_table[node].id;
     addr.u8[1] = 0;
@@ -229,7 +243,7 @@ static void send_runicast(int node)
 
     /* turn on and of green led */
     leds_on(LEDS_GREEN);
-    if(DEBUG){printf("#### Sending Runicast to %d ####\n", (int)addr.u8[0]);}
+    if(debug){printf("#### Sending Runicast to %d ####\n", (int)addr.u8[0]);}
     ctimer_set(&leds_off_timer_send, CLOCK_SECOND, timerCallback_turnOffLeds, NULL);
 }
 
@@ -249,6 +263,7 @@ PROCESS_THREAD(main_process, ev, data)
 
     // Set timer
     etimer_set(&ef, CLOCK_WAIT*CLOCK_SECOND);
+    static int looper = 0;
 
     while(1)
     {
@@ -266,12 +281,25 @@ PROCESS_THREAD(main_process, ev, data)
             /* wait for previouse runicast to finish */
             while(runicast_is_transmitting(&runicast))
             {
+                if(debug){
+                    int j = i-1;
+                    printf("Runicast busy sending to %d. Waiting.\n", neighbor_table[j].id);
+                }
                 PROCESS_PAUSE();
             }
-            send_runicast(i);
-        }
 
-        // Wait, then start again
+            send_runicast(i);
+
+            while(rc_wait_reply)
+            {
+                if(debug){
+                    printf("Awaiting reply from %d.\n", neighbor_table[i].id);
+                }
+                PROCESS_PAUSE();
+            }
+
+        }
+        if(debug){printf("Finished round %d. Waiting and start again.\n", looper++);}
         PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&ef));
         etimer_reset(&ef);
 
