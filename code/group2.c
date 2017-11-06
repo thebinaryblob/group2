@@ -10,6 +10,7 @@
 #include "sys/rtimer.h" /* for timestamps */
 
 /* constants */
+#define DEBUG 1 // Use to toggle debug messages
 #define MAX_RETRANSMISSIONS 4
 #define BROADCAST_CHANNEL 128
 #define RUNICAST_CHANNEL  120
@@ -55,6 +56,7 @@ static void timerCallback_turnOffLeds();
 static int find_neighbor(struct neighbor n, struct neighbor ntb[]);
 static void add_neighbor(struct neighbor n, struct neighbor ntb[]);
 clock_time_t calc_new_time(struct neighbor n);
+static void print_debug_msg(string msg);
 // Broadcast
 static void recv_bc(struct broadcast_conn *c, rimeaddr_t *from);
 static void send_broadcast();
@@ -66,6 +68,13 @@ static void sent_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retra
 static void send_runicast(int node);
 
 /* Function definition */
+static void print_debug_msg(string msg)
+{
+    if(DEBUG)
+    {
+        printf(msg);
+    }
+}
 
 /* Timer callback turns off all leds */
 static void timerCallback_turnOffLeds()
@@ -82,11 +91,11 @@ static int find_neighbor(struct neighbor n, struct neighbor ntb[])
     {
         if (ntb[i].id == n.id)
         {
-            //printf("Found neighbor at position %d.\n", i);
+            print_debug_msg("Found neighbor at position %d.\n", i);
             return i;
         }
     }
-    //printf("Neighbor not found in array.\n");
+    print_debug_msg("Neighbor not found in array.\n");
     return -1;
 }
 
@@ -94,7 +103,7 @@ static int find_neighbor(struct neighbor n, struct neighbor ntb[])
 /* Add neighbor to array and increasea index */
 static void add_neighbor(struct neighbor n, struct neighbor ntb[])
 {
-    // printf("Add new neighbor with id %d to array at position %d.\n", n.id, array_occupied);
+    print_debug_msg("Add new neighbor with id %d to array at position %d.\n", n.id, array_occupied);
     ntb[array_occupied] = n;
     array_occupied++;
 }
@@ -112,7 +121,7 @@ static void recv_bc(struct broadcast_conn *c, rimeaddr_t *from)
     static struct broadcastMessage rsc_msg;
     packetbuf_copyto(&rsc_msg);
 
-    printf("#### Receiving Broadcast from node %d ####\n", from->u8[0]);
+    print_debug_msg("#### Receiving Broadcast from node %d ####\n", from->u8[0]);
 
     leds_on(LEDS_RED);
     ctimer_set(&leds_off_timer_send, CLOCK_SECOND, timerCallback_turnOffLeds, NULL);
@@ -140,7 +149,7 @@ static void send_broadcast()
 
     /* turn on and of blue led */
     leds_on(LEDS_BLUE);
-    printf("#### Node %d: Sending Broadcast ####\n", node_id);
+    print_debug_msg("#### Node %d: Sending Broadcast ####\n", node_id);
     ctimer_set(&leds_off_timer_send, CLOCK_SECOND, timerCallback_turnOffLeds, NULL);
 }
 
@@ -151,12 +160,12 @@ static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seq
     struct unicastMessage runmsg_received;
     packetbuf_copyto(&runmsg_received);
 
-    printf("#### Receiving Runicast from node %d ####\n", from->u8[0]);
+    print_debug_msg("#### Receiving Runicast from node %d ####\n", from->u8[0]);
     leds_on(LEDS_GREEN);
     ctimer_set(&leds_off_timer_send, CLOCK_SECOND, timerCallback_turnOffLeds, NULL);
     if(runmsg_received.answer_expected == 1)
     {
-        //printf("Answering to %d.\n", runmsg_received.id);
+        print_debug_msg("Answering to %d.\n", runmsg_received.id);
         struct unicastMessage reply_msg;
         reply_msg.id = node_id;
         reply_msg.time = clock_time();
@@ -171,39 +180,39 @@ static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seq
     }
     else
     {
-        //printf("No answer required. Computing rtt.\n");
+        print_debug_msg("No answer required. Computing rtt.\n");
         // rtt
         struct neighbor n;
         n.id = runmsg_received.id;
         int neighbor_positon = find_neighbor(n, neighbor_table);
         clock_time_t rtt = clock_time() - neighbor_table[neighbor_positon].last_sent;
-        printf("RTT for neighbor %d is %d.\n", n.id, (uint16_t)rtt);
+        print_debug_msg("RTT for neighbor %d is %d.\n", n.id, (uint16_t)rtt);
 
         clock_time_t this_neighbor_time = runmsg_received.time + rtt/2;
-        //printf("This this_neighbor_time is %d.\n", (uint16_t)this_neighbor_time);
-        //printf("Our time is %d.\n", (uint16_t)clock_time());
+        //print_debug_msg("This this_neighbor_time is %d.\n", (uint16_t)this_neighbor_time);
+        //print_debug_msg("Our time is %d.\n", (uint16_t)clock_time());
 
         /* Update neighbor time in array */
         neighbor_table[neighbor_positon].this_neighbor_time = this_neighbor_time;
 
         /* Adjust for time drift and update our local time */
         clock_time_t newtime = calc_new_time(neighbor_table[neighbor_positon]);
-        printf("###############################################\n");
-        printf("Old time: %d.\n", (uint16_t)clock_time());
-        printf("New time: %d.\n", (uint16_t)newtime);
+        print_debug_msg("###############################################\n");
+        print_debug_msg("Old time: %d.\n", (uint16_t)clock_time());
+        print_debug_msg("New time: %d.\n", (uint16_t)newtime);
         clock_set(newtime);
-        printf("Set time: %d.\n", (uint16_t)clock_time());
-        printf("###############################################\n");
+        printf("Set time for node %d: %d.\n", node_id, (uint16_t)clock_time());
+        print_debug_msg("###############################################\n");
     }
 }
 
 static void sent_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retransmissions)
 {
-    printf("runicast message sent to %d.%d, retransmissions %d\n", to->u8[0], to->u8[1], retransmissions);
+    print_debug_msg("runicast message sent to %d.%d, retransmissions %d\n", to->u8[0], to->u8[1], retransmissions);
 }
 static void timedout_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retransmissions)
 {
-    printf("runicast message timed out when sending to %d.%d, retransmissions %d\n", to->u8[0], to->u8[1], retransmissions);
+    print_debug_msg("runicast message timed out when sending to %d.%d, retransmissions %d\n", to->u8[0], to->u8[1], retransmissions);
 }
 static const struct runicast_callbacks runicast_callbacks = {recv_runicast, sent_runicast, timedout_runicast};
 
@@ -228,7 +237,7 @@ static void send_runicast(int node)
 
     /* turn on and of green led */
     leds_on(LEDS_GREEN);
-    printf("#### Sending Runicast to %d ####\n", (int)addr.u8[0]);
+    print_debug_msg("#### Sending Runicast to %d ####\n", (int)addr.u8[0]);
     ctimer_set(&leds_off_timer_send, CLOCK_SECOND, timerCallback_turnOffLeds, NULL);
 }
 
