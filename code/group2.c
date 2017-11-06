@@ -160,6 +160,14 @@ static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seq
     if(debug){printf("#### Receiving Runicast from node %d ####\n", from->u8[0]);}
     leds_on(LEDS_GREEN);
     ctimer_set(&leds_off_timer_send, CLOCK_SECOND, timerCallback_turnOffLeds, NULL);
+
+    // Wait for other runicasts to finish
+    while(runicast_is_transmitting(&runicast))
+    {
+        if(debug){printf("Runicast busy sending to %d. Waiting.\n", neighbor_table[i].id);}
+        PROCESS_PAUSE();
+    }
+
     if(runmsg_received.answer_expected == 1)
     {
         if(debug){printf("Answering to %d.\n", runmsg_received.id);}
@@ -204,6 +212,8 @@ static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seq
         if(debug){printf("Old time: %d.\n", (uint16_t)clock_time());}
         if(debug){printf("New time: %d.\n", (uint16_t)newtime);}
         clock_set(newtime);
+        // Inform the etimer library that the system clock has changed
+        etimer_request_poll();
         printf("Set time for node %d: %d.\n", node_id, (uint16_t)clock_time());
         if(debug){printf("###############################################\n");}
         rc_wait_reply = 0;
@@ -261,8 +271,6 @@ PROCESS_THREAD(main_process, ev, data)
     runicast_open(&runicast, RUNICAST_CHANNEL, &runicast_callbacks);
     broadcast_open(&bc, BROADCAST_CHANNEL, &broadcast_callback);
 
-    // Set timer
-    etimer_set(&ef, CLOCK_WAIT*CLOCK_SECOND);
     static int looper = 0;
 
     while(1)
@@ -270,6 +278,8 @@ PROCESS_THREAD(main_process, ev, data)
         // Neighborhood Discovery Phase
         // Send broadcast and wait for callback
         send_broadcast();
+        // Set timer
+        etimer_set(&ef, CLOCK_WAIT*CLOCK_SECOND);
         PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&ef));
         etimer_reset(&ef);
 
@@ -278,30 +288,27 @@ PROCESS_THREAD(main_process, ev, data)
         static int i;
         for(i = 0; i < array_occupied; i++)
         {
-            /* wait for previouse runicast to finish */
-            while(runicast_is_transmitting(&runicast))
-            {
-                if(debug){
-                    int j = i-1;
-                    printf("Runicast busy sending to %d. Waiting.\n", neighbor_table[j].id);
-                }
-                PROCESS_PAUSE();
-            }
 
             send_runicast(i);
 
+            /* wait for previouse runicast to finish */
+            while(runicast_is_transmitting(&runicast))
+            {
+                if(debug){printf("Runicast busy sending to %d. Waiting.\n", neighbor_table[i].id);}
+                PROCESS_PAUSE();
+            }
+
             while(rc_wait_reply)
             {
-                if(debug){
-                    printf("Awaiting reply from %d.\n", neighbor_table[i].id);
-                }
+                if(debug){printf("Awaiting reply from %d.\n", neighbor_table[i].id);}
                 PROCESS_PAUSE();
             }
 
         }
+
         if(debug){printf("Finished round %d. Waiting and start again.\n", looper++);}
-        PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&ef));
-        etimer_reset(&ef);
+        // PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&ef));
+        // etimer_reset(&ef);
 
         // Todo: Evaluation
     }
