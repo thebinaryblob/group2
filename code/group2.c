@@ -10,11 +10,10 @@
 #include "sys/rtimer.h" /* for timestamps */
 
 /* constants */
-#define VERSION 1
 #define MAX_RETRANSMISSIONS 4
 #define BROADCAST_CHANNEL 128
 #define RUNICAST_CHANNEL  120
-#define ARRAY_SIZE 40
+#define ARRAY_SIZE 40 // Numer of nodes in cluster
 #define CLOCK_WAIT 20
 static float r = 0.5;
 
@@ -34,32 +33,37 @@ struct unicastMessage {
 struct neighbor {
     int id;
     clock_time_t this_neighbor_time;
-    clock_time_t last_sent; // Is 0 if not used
+    clock_time_t last_sent; // When did we last call that neighbor? Defaults to 0.
 };
 
 
 /* Variable declaration */
 static struct neighbor neighbor_table[ARRAY_SIZE];
+static int array_occupied; /* Number of elements in array */
 static struct etimer ef;
 static struct ctimer leds_off_timer_send;
-static int array_occupied; /* Number of elements in array */
 static struct broadcastMessage tmSent;
+// Broadcast
 static struct broadcast_conn bc;
-static void timerCallback_turnOffLeds();
+static const struct broadcast_callbacks broadcast_callback;
+// Runicast
+static struct runicast_conn runicast;
+static const struct runicast_callbacks runicast_callbacks;
 
 /* Function declaration */
 static void timerCallback_turnOffLeds();
 static int find_neighbor(struct neighbor n, struct neighbor ntb[]);
+static void add_neighbor(struct neighbor n, struct neighbor ntb[]);
+clock_time_t calc_new_time(struct neighbor n);
 // Broadcast
 static void recv_bc(struct broadcast_conn *c, rimeaddr_t *from);
-static const struct broadcast_callbacks broadcast_callback;
+static void send_broadcast();
 // Runicast
-static struct runicast_conn runicast;
 static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seqno);
 static void sent_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retransmissions);
 static void timedout_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retransmissions);
 static void sent_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retransmissions);
-static const struct runicast_callbacks runicast_callbacks;
+static void send_runicast(int node);
 
 /* Function definition */
 
@@ -90,7 +94,7 @@ static int find_neighbor(struct neighbor n, struct neighbor ntb[])
 /* Add neighbor to array and increasea index */
 static void add_neighbor(struct neighbor n, struct neighbor ntb[])
 {
-    printf("Add new neighbor with id %d to array at position %d.\n", n.id, array_occupied);
+    // printf("Add new neighbor with id %d to array at position %d.\n", n.id, array_occupied);
     ntb[array_occupied] = n;
     array_occupied++;
 }
@@ -99,9 +103,6 @@ static void add_neighbor(struct neighbor n, struct neighbor ntb[])
 clock_time_t calc_new_time(struct neighbor n)
 {
     clock_time_t result = clock_time() - r*(clock_time() - n.this_neighbor_time);
-    clock_time_t tmp = r*(clock_time() - n.this_neighbor_time);
-    // printf("TMP: %d", (int)tmp);
-    
     return result;
 }
 
@@ -124,8 +125,8 @@ static void recv_bc(struct broadcast_conn *c, rimeaddr_t *from)
     {
         add_neighbor(new_neighbor, neighbor_table);
     }
-
 }
+
 static const struct broadcast_callbacks broadcast_callback = {recv_bc};
 
 /* Send broadcast */
@@ -190,9 +191,7 @@ static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seq
         printf("###############################################\n");
         printf("Old time: %d.\n", (uint16_t)clock_time());
         printf("New time: %d.\n", (uint16_t)newtime);
-        /* use function in ../../cpu/msp430/f1xxx/clock.c */
         clock_set(newtime);
-        // clock_set_seconds(newtime);
         printf("Set time: %d.\n", (uint16_t)clock_time());
         printf("###############################################\n");
     }
@@ -250,19 +249,16 @@ PROCESS_THREAD(main_process, ev, data)
     // Set timer
     etimer_set(&ef, CLOCK_WAIT*CLOCK_SECOND);
 
-    // Check if all nodes are running the same code
-    printf("Running program version %d.\n", VERSION);
-
     while(1)
     {
-        // Neighborhood Discovery Phase with broadcast
+        // Neighborhood Discovery Phase
+        // Send broadcast and wait for callback
         send_broadcast();
-        // Wait for callback
         PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&ef));
         etimer_reset(&ef);
 
-        // Time adjustment using runicast
-        /* loop over neighbors */
+        // Time Adjustment Phase
+        // Send Runicast to ever neighbor
         static int i;
         for(i = 0; i < array_occupied; i++)
         {
@@ -273,6 +269,7 @@ PROCESS_THREAD(main_process, ev, data)
             }
             send_runicast(i);
         }
+
         // Wait, then start again
         PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&ef));
         etimer_reset(&ef);
