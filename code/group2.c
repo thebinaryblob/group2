@@ -12,11 +12,13 @@
 #include "node-id.h" /* fro node_id */
 #include <stdio.h> /* for printing */
 #include "sys/rtimer.h" /* for timestamps */
+#include "packetqueue.h"
 
 /* constants */
 #define MAX_RETRANSMISSIONS 4
 #define BROADCAST_CHANNEL 128
 #define RUNICAST_CHANNEL  120
+#define PACKETQUEUE	(queue , 20 * sizeof(struct packet))
 #define ARRAY_SIZE 40 // Numer of nodes in cluster
 #define CLOCK_WAIT 10
 static float r = 0.5;
@@ -40,6 +42,12 @@ struct neighbor {
     int id;
     clock_time_t this_neighbor_time;
     clock_time_t last_sent; // When did we last call that neighbor? Defaults to 0.
+};
+
+struct packet {
+	struct unicastMessage msg;
+	rimeaddr_t addr;
+	int node;
 };
 
 
@@ -70,6 +78,7 @@ static void sent_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retra
 static void timedout_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retransmissions);
 static void sent_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retransmissions);
 static void send_runicast(int node);
+static void enqueue_packet(struct unicastMessage msg, rimeaddr_t addr, int node);
 
 /* Function definition */
 
@@ -164,8 +173,8 @@ static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seq
     // Wait for other runicasts to finish
     while(runicast_is_transmitting(&runicast))
     {
-        if(debug){printf("Runicast busy sending to %d. Waiting.\n", neighbor_table[i].id);}
-        PROCESS_PAUSE();
+        //if(debug){printf("Runicast busy sending to %d. Waiting.\n", neighbor_table[i].id);}
+        //PROCESS_PAUSE();
     }
 
     if(runmsg_received.answer_expected == 1)
@@ -229,6 +238,7 @@ static void timedout_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t r
 {
     if(debug){printf("runicast message timed out when sending to %d.%d, retransmissions %d\n", to->u8[0], to->u8[1], retransmissions);}
 }
+
 static const struct runicast_callbacks runicast_callbacks = {recv_runicast, sent_runicast, timedout_runicast};
 
 
@@ -245,16 +255,19 @@ static void send_runicast(int node)
     msg.time = clock_time();
     msg.answer_expected = 1;
     msg.id = node_id;
-    packetbuf_copyfrom(&msg, sizeof(msg));
-    runicast_send(&runicast, &addr, MAX_RETRANSMISSIONS);
 
-    /* Note when we send to the neighbor */
-    neighbor_table[node].last_sent = clock_time();
+    enqueue_packet(msg, addr, node);
+}
 
-    /* turn on and of green led */
-    leds_on(LEDS_GREEN);
-    if(debug){printf("#### Sending Runicast to %d ####\n", (int)addr.u8[0]);}
-    ctimer_set(&leds_off_timer_send, CLOCK_SECOND, timerCallback_turnOffLeds, NULL);
+
+static void enqueue_packet(struct unicastMessage msg, rimeaddr_t addr, int node)
+{
+	static struct packet packet;
+	packet.msg = msg;
+	packet.addr = addr;
+	packet.node = node;
+	// 0 lifetime means it stays in the queue indefenetly
+	packetqueue_enqueue_packetbuf(&queue,0,&packet);
 }
 
 /*-----------------------------------------------------*/
@@ -315,4 +328,42 @@ PROCESS_THREAD(main_process, ev, data)
 
     PROCESS_END();
 }
-AUTOSTART_PROCESSES(&main_process);
+
+PROCESS(runicast_sender, "Runicast Sender");
+PROCESS_THREAD(runicast_sender, ev, data)
+{
+    PROCESS_BEGIN()
+    // init packetqueue
+	packetqueue_init(&queue);
+
+	while(1){
+	    //wait for previouse runicast to finish and for packets to be enqueued
+	    while(runicast_is_transmitting(&runicast) && packetqueue_len(&queue) < 1)
+	    {
+	    	//if(debug){printf("Runicast busy sending to %d. Waiting.\n", neighbor_table[i].id);}
+	    	PROCESS_PAUSE();
+	    }
+
+	    struct packet packet;
+	    packet = *(struct packet*)packetqueue_ptr(packetqueue_first(&queue));
+	    // Remove packet from queue
+	    packetqueue_dequeue(&queue);
+
+	    packetbuf_copyfrom(&packet.msg, sizeof(packet.msg));
+	    runicast_send(&runicast, &packet.addr, MAX_RETRANSMISSIONS);
+
+	    /* Note when we send to the neighbor */
+	    neighbor_table[packet.node].last_sent = clock_time();
+
+	    /* turn on and of green led */
+	    leds_on(LEDS_GREEN);
+	    if(debug){printf("#### Sending Runicast to %d ####\n", (int)packet.addr.u8[0]);}
+	    ctimer_set(&leds_off_timer_send, CLOCK_SECOND, timerCallback_turnOffLeds, NULL);
+
+	    PROCESS_PAUSE();
+	}
+
+    PROCESS_END();
+ }
+
+AUTOSTART_PROCESSES(&main_process, &runicast_sender);
