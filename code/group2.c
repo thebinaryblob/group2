@@ -1,8 +1,4 @@
 /* Group project IoT 2017 */
-// TODO:
-// - RTT can be negativ because we use time.now() befor and after resetting our clock time.
-// - Iterations stop after 3-5 turns when 3+ nodes are used. Debug.
-// - Print output to tarwis to get information about our experiments
 
 #include "contiki.h"
 #include "net/rime.h" /* for runicast */
@@ -32,16 +28,20 @@ struct broadcastMessage {
 
 struct unicastMessage {
     int id;
-    clock_time_t time;
+    int dest;
+    clock_time_t time_sender;
+    clock_time_t time_receiver; // 0 if not set
     int answer_expected;
 };
 
 struct neighbor {
     int id;
-    clock_time_t this_neighbor_time;
-    clock_time_t last_sent; // When did we last call that neighbor? Defaults to 0.
 };
 
+struct runicastQueueItem {
+    struct unicastMessage msg;
+    struct runicastQueueItem *next;
+};
 
 /* Variable declaration */
 static struct neighbor neighbor_table[ARRAY_SIZE];
@@ -60,7 +60,7 @@ static const struct runicast_callbacks runicast_callbacks;
 static void timerCallback_turnOffLeds();
 static int find_neighbor(struct neighbor n, struct neighbor ntb[]);
 static void add_neighbor(struct neighbor n, struct neighbor ntb[]);
-clock_time_t calc_new_time(struct neighbor n);
+clock_time_t calc_new_time(clock_time_t t);
 // Broadcast
 static void recv_bc(struct broadcast_conn *c, rimeaddr_t *from);
 static void send_broadcast();
@@ -69,7 +69,44 @@ static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seq
 static void sent_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retransmissions);
 static void timedout_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retransmissions);
 static void sent_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retransmissions);
-static void send_runicast(int node);
+
+static struct runicastQueueItem *list = NULL;
+static void addQueueItem(struct unicastMessage message, struct runicastQueueItem *list)
+{
+	if(list == NULL)
+	{
+  	struct runicastQueueItem item;
+  	item.msg = message;
+  	item.next = NULL;
+  	list = &item;
+	}else
+	{
+  	addQueueItem(message, (*list).next);
+	}
+}
+static struct unicastMessage popQueueItem(struct runicastQueueItem *list)
+{
+	if(list == NULL)
+    {
+      	printf("Queue is empty");
+      	struct unicastMessage msg;
+      	return msg;
+    }
+	struct unicastMessage msg;
+	msg = (*list).msg;
+    list = (*list).next;
+    return msg;
+
+}
+
+static int queueHasElement(struct runicastQueueItem *list)
+{
+	if(list == NULL)
+    {
+    	return 0;
+    }
+	return 1;
+}
 
 /* Function definition */
 
@@ -106,9 +143,9 @@ static void add_neighbor(struct neighbor n, struct neighbor ntb[])
 }
 
 /* Return time difference with neighbor n */
-clock_time_t calc_new_time(struct neighbor n)
+clock_time_t calc_new_time(clock_time_t t)
 {
-    clock_time_t result = clock_time() - r*(clock_time() - n.this_neighbor_time);
+    clock_time_t result = clock_time() - r*(clock_time() - t);
     return result;
 }
 
@@ -125,8 +162,6 @@ static void recv_bc(struct broadcast_conn *c, rimeaddr_t *from)
 
     struct neighbor new_neighbor;
     new_neighbor.id = rsc_msg.id;
-    new_neighbor.this_neighbor_time = rsc_msg.time;
-    new_neighbor.last_sent = 0;
     if (find_neighbor(new_neighbor, neighbor_table) == -1)
     {
         add_neighbor(new_neighbor, neighbor_table);
@@ -161,27 +196,16 @@ static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seq
     leds_on(LEDS_GREEN);
     ctimer_set(&leds_off_timer_send, CLOCK_SECOND, timerCallback_turnOffLeds, NULL);
 
-    // Wait for other runicasts to finish
-    while(runicast_is_transmitting(&runicast))
-    {
-        if(debug){printf("Runicast busy sending to %d. Waiting.\n", neighbor_table[i].id);}
-        PROCESS_PAUSE();
-    }
-
     if(runmsg_received.answer_expected == 1)
     {
-        if(debug){printf("Answering to %d.\n", runmsg_received.id);}
+        if(debug){printf("Answering to %d. (Add element to queue.)\n", runmsg_received.id);}
         struct unicastMessage reply_msg;
         reply_msg.id = node_id;
-        reply_msg.time = clock_time();
+        reply_msg.dest = runmsg_received.id;
+        reply_msg.time_sender = runmsg_received.time_sender;
+        reply_msg.time_receiver = clock_time();
         reply_msg.answer_expected = 0;
-
-        rimeaddr_t addr;
-        addr.u8[0] = runmsg_received.id;
-        addr.u8[1] = 0;
-
-        packetbuf_copyfrom(&reply_msg, sizeof(reply_msg));
-        runicast_send(&runicast, &addr, MAX_RETRANSMISSIONS);
+        addQueueItem(reply_msg, list);
     }
     else
     {
@@ -190,24 +214,17 @@ static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seq
         struct neighbor n;
         n.id = runmsg_received.id;
         int neighbor_positon = find_neighbor(n, neighbor_table);
-        clock_time_t rtt = clock_time() - neighbor_table[neighbor_positon].last_sent;
+        clock_time_t rtt = clock_time() - runmsg_received.time_sender;
 
-        // rtt can be negativ (bug) lets make sure it is positive for now
-        if((uint16_t)rtt < 0)
-        {
-            rtt = 1;
-        }
         if(debug){printf("RTT for neighbor %d is %d.\n", n.id, (uint16_t)rtt);}
 
-        clock_time_t this_neighbor_time = runmsg_received.time + rtt/2;
+        clock_time_t this_neighbor_time = runmsg_received.time_receiver + rtt/2;
         //if(debug){printf("This this_neighbor_time is %d.\n", (uint16_t)this_neighbor_time);}
         //if(debug){printf("Our time is %d.\n", (uint16_t)clock_time());}
 
-        /* Update neighbor time in array */
-        neighbor_table[neighbor_positon].this_neighbor_time = this_neighbor_time;
 
         /* Adjust for time drift and update our local time */
-        clock_time_t newtime = calc_new_time(neighbor_table[neighbor_positon]);
+        clock_time_t newtime = calc_new_time(this_neighbor_time);
         if(debug){printf("###############################################\n");}
         if(debug){printf("Old time: %d.\n", (uint16_t)clock_time());}
         if(debug){printf("New time: %d.\n", (uint16_t)newtime);}
@@ -230,32 +247,6 @@ static void timedout_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t r
     if(debug){printf("runicast message timed out when sending to %d.%d, retransmissions %d\n", to->u8[0], to->u8[1], retransmissions);}
 }
 static const struct runicast_callbacks runicast_callbacks = {recv_runicast, sent_runicast, timedout_runicast};
-
-
-static void send_runicast(int node)
-{
-
-    rc_wait_reply = 1;
-    rimeaddr_t addr;
-    addr.u8[0] = neighbor_table[node].id;
-    addr.u8[1] = 0;
-
-    /* compose and send message */
-    struct unicastMessage msg;
-    msg.time = clock_time();
-    msg.answer_expected = 1;
-    msg.id = node_id;
-    packetbuf_copyfrom(&msg, sizeof(msg));
-    runicast_send(&runicast, &addr, MAX_RETRANSMISSIONS);
-
-    /* Note when we send to the neighbor */
-    neighbor_table[node].last_sent = clock_time();
-
-    /* turn on and of green led */
-    leds_on(LEDS_GREEN);
-    if(debug){printf("#### Sending Runicast to %d ####\n", (int)addr.u8[0]);}
-    ctimer_set(&leds_off_timer_send, CLOCK_SECOND, timerCallback_turnOffLeds, NULL);
-}
 
 /*-----------------------------------------------------*/
 // Main Process
@@ -289,7 +280,16 @@ PROCESS_THREAD(main_process, ev, data)
         for(i = 0; i < array_occupied; i++)
         {
 
-            send_runicast(i);
+            rc_wait_reply = 1;
+
+            /* compose and send message */
+            struct unicastMessage msg;
+            msg.time_sender = clock_time();
+            msg.time_receiver = 0;
+            msg.answer_expected = 1;
+            msg.id = node_id;
+            msg.dest = neighbor_table[i].id;
+            addQueueItem(msg, &list);
 
             /* wait for previouse runicast to finish */
             while(runicast_is_transmitting(&runicast))
@@ -315,4 +315,34 @@ PROCESS_THREAD(main_process, ev, data)
 
     PROCESS_END();
 }
-AUTOSTART_PROCESSES(&main_process);
+PROCESS(runicast_sender, "Runicast sender");
+PROCESS_THREAD(runicast_sender, ev, data)
+{
+    PROCESS_BEGIN();
+    while(1)
+    {
+        if(queueHasElement(list) && !runicast_is_transmitting(&runicast))
+        {
+            struct unicastMessage msg = popQueueItem(list);
+            rimeaddr_t addr;
+            addr.u8[0] = msg.dest;
+            addr.u8[1] = 0;
+
+
+            packetbuf_copyfrom(&msg, sizeof(msg));
+            runicast_send(&runicast, &addr, MAX_RETRANSMISSIONS);
+
+            /* turn on and of green led */
+            leds_on(LEDS_GREEN);
+            if(debug){printf("#### Sending Runicast to %d ####\n", (int)addr.u8[0]);}
+            ctimer_set(&leds_off_timer_send, CLOCK_SECOND, timerCallback_turnOffLeds, NULL);
+        }
+      	else
+        {
+            //if(debug){printf("#### Queque empty or runicast sending. Waiting ... ####\n");}
+        }
+      	PROCESS_PAUSE();
+    }
+    PROCESS_END();
+}
+AUTOSTART_PROCESSES(&main_process, &runicast_sender);
