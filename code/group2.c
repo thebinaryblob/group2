@@ -14,7 +14,7 @@
 #define BROADCAST_CHANNEL 128
 #define RUNICAST_CHANNEL  120
 #define ARRAY_SIZE 40 // Numer of nodes in cluster
-#define CLOCK_WAIT 10
+#define CLOCK_WAIT 30
 static float r = 0.5;
 static int debug = 1; // Use to toggle debug messages
 static int rc_wait_reply = 0; // Wait until we receive a message
@@ -70,41 +70,46 @@ static void sent_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retra
 static void timedout_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retransmissions);
 static void sent_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retransmissions);
 
-static struct runicastQueueItem *list = NULL;
-static void addQueueItem(struct unicastMessage message, struct runicastQueueItem *list)
+static struct runicastQueueItem *head = NULL;
+static struct runicastQueueItem *current = NULL;
+
+static void createQueue(struct unicastMessage message)
 {
-    
-    if(debug){printf("####starting to add a QueueItem####\n");}
-    //TODO fix bug
-    struct runicastQueueItem *current = list;
-    while(current->next)
+	struct runicastQueueItem *ptr = (struct runicastQueueItem*)malloc(sizeof(struct runicastQueueItem));
+	ptr->msg = message;
+	ptr->next = NULL;
+	
+	head = current = ptr;
+}
+
+static void addQueueItem(struct unicastMessage message)
+{
+    if(NULL == head)
     {
-        current = current->next;
+    	createQueue(message);
     }
-
-    // Now we're at the last element
-    current->next = malloc(sizeof(struct runicastQueueItem));
-    current->next->msg = message;
-    current->next->next = NULL;
     
-    if(debug){printf("####added a QueueItem sucessful####\n");}
+    struct runicastQueueItem *ptr = (struct runicastQueueItem*)malloc(sizeof(struct runicastQueueItem));
+	ptr->msg = message;
+	ptr->next = NULL;
+	current->next = ptr;
+	current = ptr;
+	
 }
-static struct unicastMessage popQueueItem(struct runicastQueueItem *list)
+static struct unicastMessage popQueueItem()
 {
-    struct unicastMessage val;
-    struct runicastQueueItem *next = NULL;
-
-    next = list->next;
-    val = list->msg;
-    free(list);
-    list = next;
-
-    return val;
+    struct runicastQueueItem *ptr = NULL;
+    ptr = head;
+    head = head->next;
+    struct unicastMessage res = ptr->msg;
+    free(ptr);
+    return res;
+	
 }
 
-static int queueHasElement(struct runicastQueueItem *list)
+static int queueHasElement()
 {
-	if(!list)
+	if(NULL == head)
     {
         // if(debug){printf("Queue has no element.\n");}
     	return 0;
@@ -210,7 +215,7 @@ static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seq
         reply_msg.time_sender = runmsg_received.time_sender;
         reply_msg.time_receiver = clock_time();
         reply_msg.answer_expected = 0;
-        addQueueItem(reply_msg, list);
+        addQueueItem(reply_msg);
     }
     else
     {
@@ -293,7 +298,7 @@ PROCESS_THREAD(main_process, ev, data)
             msg.answer_expected = 1;
             msg.id = node_id;
             msg.dest = neighbor_table[i].id;
-            addQueueItem(msg, list);
+            addQueueItem(msg);
 
             while(rc_wait_reply)
             {
@@ -322,9 +327,9 @@ PROCESS_THREAD(runicast_sender, ev, data)
     runicast_open(&runicast, RUNICAST_CHANNEL, &runicast_callbacks);
     while(1)
     {
-        if(queueHasElement(list) && !runicast_is_transmitting(&runicast))
+        if(queueHasElement() && !runicast_is_transmitting(&runicast))
         {
-            struct unicastMessage msg = popQueueItem(list);
+            struct unicastMessage msg = popQueueItem();
             rimeaddr_t addr;
             addr.u8[0] = msg.dest;
             addr.u8[1] = 0;
