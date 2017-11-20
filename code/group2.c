@@ -73,20 +73,22 @@ static void sent_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retra
 static struct runicastQueueItem *list = NULL;
 static void addQueueItem(struct unicastMessage message, struct runicastQueueItem *list)
 {
-	if(list == NULL)
+	if(!list)
 	{
-  	struct runicastQueueItem item;
-  	item.msg = message;
-  	item.next = NULL;
-  	list = &item;
+        if(debug){printf("Add queque element.\n");}
+        struct runicastQueueItem item;
+        item.msg = message;
+        item.next = NULL;
+        list = &item;
 	}else
 	{
-  	addQueueItem(message, (*list).next);
+        if(debug){printf("List has element. Do recursion.\n");}
+        addQueueItem(message, (*list).next);
 	}
 }
 static struct unicastMessage popQueueItem(struct runicastQueueItem *list)
 {
-	if(list == NULL)
+	if(!list)
     {
       	printf("Queue is empty");
       	struct unicastMessage msg;
@@ -101,10 +103,12 @@ static struct unicastMessage popQueueItem(struct runicastQueueItem *list)
 
 static int queueHasElement(struct runicastQueueItem *list)
 {
-	if(list == NULL)
+	if(!list)
     {
+        if(debug){printf("Queue has no element.\n");}
     	return 0;
     }
+    if(debug){printf("Queue has elements.\n");}
 	return 1;
 }
 
@@ -255,11 +259,10 @@ PROCESS(main_process, "Main process");
 PROCESS_THREAD(main_process, ev, data)
 {
     // Gracefully close the communication channels at the end
-    PROCESS_EXITHANDLER(runicast_close(&runicast); broadcast_close(&bc);)
+    PROCESS_EXITHANDLER(broadcast_close(&bc);)
     PROCESS_BEGIN();
 
     // Open the communication channels to be able to send/receive packets
-    runicast_open(&runicast, RUNICAST_CHANNEL, &runicast_callbacks);
     broadcast_open(&bc, BROADCAST_CHANNEL, &broadcast_callback);
 
     static int looper = 0;
@@ -289,14 +292,7 @@ PROCESS_THREAD(main_process, ev, data)
             msg.answer_expected = 1;
             msg.id = node_id;
             msg.dest = neighbor_table[i].id;
-            addQueueItem(msg, &list);
-
-            /* wait for previouse runicast to finish */
-            while(runicast_is_transmitting(&runicast))
-            {
-                if(debug){printf("Runicast busy sending to %d. Waiting.\n", neighbor_table[i].id);}
-                PROCESS_PAUSE();
-            }
+            addQueueItem(msg, list);
 
             while(rc_wait_reply)
             {
@@ -318,7 +314,11 @@ PROCESS_THREAD(main_process, ev, data)
 PROCESS(runicast_sender, "Runicast sender");
 PROCESS_THREAD(runicast_sender, ev, data)
 {
+    // Gracefully close the communication channels at the end
+    PROCESS_EXITHANDLER(runicast_close(&runicast);)
     PROCESS_BEGIN();
+    // Open the communication channels to be able to send/receive packets
+    runicast_open(&runicast, RUNICAST_CHANNEL, &runicast_callbacks);
     while(1)
     {
         if(queueHasElement(list) && !runicast_is_transmitting(&runicast))
@@ -339,7 +339,7 @@ PROCESS_THREAD(runicast_sender, ev, data)
         }
       	else
         {
-            //if(debug){printf("#### Queque empty or runicast sending. Waiting ... ####\n");}
+            if(debug){printf("#### Queque empty or runicast sending. Waiting ... ####\n");}
         }
       	PROCESS_PAUSE();
     }
