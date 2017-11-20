@@ -73,42 +73,36 @@ static void sent_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retra
 static struct runicastQueueItem *list = NULL;
 static void addQueueItem(struct unicastMessage message, struct runicastQueueItem *list)
 {
-	if(!list)
-	{
-        if(debug){printf("Add queque element.\n");}
-        struct runicastQueueItem item;
-        item.msg = message;
-        item.next = NULL;
-        list = &item;
-	}else
-	{
-        if(debug){printf("List has element. Do recursion.\n");}
-        addQueueItem(message, (*list).next);
-	}
+    struct runicastQueueItem *current = list;
+    while(current->next)
+    {
+        current = current->next;
+    }
+
+    // Now we're at the last element
+    current->next->msg = message;
+    current->next->next = NULL;
 }
 static struct unicastMessage popQueueItem(struct runicastQueueItem *list)
 {
-	if(!list)
-    {
-      	printf("Queue is empty");
-      	struct unicastMessage msg;
-      	return msg;
-    }
-	struct unicastMessage msg;
-	msg = (*list).msg;
-    list = (*list).next;
-    return msg;
+    struct unicastMessage val;
+    struct runicastQueueItem *next = NULL;
 
+    next = list->next;
+    val = list->msg;
+    list = next;
+
+    return val;
 }
 
 static int queueHasElement(struct runicastQueueItem *list)
 {
 	if(!list)
     {
-        if(debug){printf("Queue has no element.\n");}
+        // if(debug){printf("Queue has no element.\n");}
     	return 0;
     }
-    if(debug){printf("Queue has elements.\n");}
+    // if(debug){printf("Queue has elements.\n");}
 	return 1;
 }
 
@@ -296,7 +290,7 @@ PROCESS_THREAD(main_process, ev, data)
 
             while(rc_wait_reply)
             {
-                if(debug){printf("Awaiting reply from %d.\n", neighbor_table[i].id);}
+              //  if(debug){printf("Awaiting reply from %d.\n", neighbor_table[i].id);}
                 PROCESS_PAUSE();
             }
 
@@ -339,7 +333,7 @@ PROCESS_THREAD(runicast_sender, ev, data)
         }
       	else
         {
-            if(debug){printf("#### Queque empty or runicast sending. Waiting ... ####\n");}
+            // if(debug){printf("#### Queque empty or runicast sending. Waiting ... ####\n");}
         }
       	PROCESS_PAUSE();
     }
