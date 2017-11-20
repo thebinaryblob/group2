@@ -14,7 +14,7 @@
 #define BROADCAST_CHANNEL 128
 #define RUNICAST_CHANNEL  120
 #define ARRAY_SIZE 40 // Numer of nodes in cluster
-#define CLOCK_WAIT 30
+#define CLOCK_WAIT 10
 static float r = 0.5;
 static int debug = 1; // Use to toggle debug messages
 static int rc_wait_reply = 0; // Wait until we receive a message
@@ -285,6 +285,7 @@ PROCESS_THREAD(main_process, ev, data)
 
         // Time Adjustment Phase
         // Send Runicast to ever neighbor
+        if(debug){printf("Starting Adjustment Phase");}
         static int i;
         for(i = 0; i < array_occupied; i++)
         {
