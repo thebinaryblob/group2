@@ -73,9 +73,6 @@ static void sent_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retra
 static struct runicastQueueItem *list = NULL;
 static void addQueueItem(struct unicastMessage message, struct runicastQueueItem *list)
 {
-    
-    if(debug){printf("####starting to add a QueueItem####\n");}
-    //TODO fix bug
     struct runicastQueueItem *current = list;
     while(current->next)
     {
@@ -83,11 +80,8 @@ static void addQueueItem(struct unicastMessage message, struct runicastQueueItem
     }
 
     // Now we're at the last element
-    current->next = malloc(sizeof(struct runicastQueueItem));
     current->next->msg = message;
     current->next->next = NULL;
-    
-    if(debug){printf("####added a QueueItem sucessful####\n");}
 }
 static struct unicastMessage popQueueItem(struct runicastQueueItem *list)
 {
@@ -96,7 +90,6 @@ static struct unicastMessage popQueueItem(struct runicastQueueItem *list)
 
     next = list->next;
     val = list->msg;
-    free(list);
     list = next;
 
     return val;
