@@ -14,21 +14,24 @@ for child in trace:
     if child.tag == '{http://wisebed.eu/ns/wiseml/1.0}timestamp':
         timestamp = Decimal(child.text)
     elif child.tag == '{http://wisebed.eu/ns/wiseml/1.0}node':
-        string = (child.find('{http://wisebed.eu/ns/wiseml/1.0}data').text).split(":")[1]
-        node_id = child.attrib['id']
-        diff = (float) (Decimal(string) - timestamp)
-        loop = randint(100,1500) # TODO add loop parsing
-        if not node_id in data:
-            data[node_id] = {}
-        data[node_id][loop] = diff
-        x.append(loop)
-        y.append(diff)
+        valueSplit = (child.find('{http://wisebed.eu/ns/wiseml/1.0}data').text).split(":")
+        if valueSplit[0] == 'LoopTime':
+			loop_count = (float) (Decimal(valueSplit[1]))
+			node_time = valueSplit[2]
+			node_id = child.attrib['id']
+			diff = (float) (Decimal(node_time) - timestamp)
+			if not node_id in data:
+				data[node_id] = {}
+			data[node_id][loop_count] = diff
+			x.append(loop_count)
+			y.append(diff)
 
 print data
 
 figure = plt.subplot(111)
 figure.scatter(x,y)
-figure.set_xlim([0,1500])
+figure.plot([0,200],[np.mean(y)] * 2)
+figure.set_xlim([np.amin(x),np.amax(x)])
 figure.set_ylim([np.amin(y),np.amax(y)])
 
 plt.show()
