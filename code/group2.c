@@ -9,14 +9,18 @@
 #include <stdio.h> /* for printing */
 #include "sys/rtimer.h" /* for timestamps */
 
+
+/* Change these variables for thesting */
+static float r = 0.5;
+static int debug = 1; // Use to toggle debug messages
+
+
 /* constants */
 #define MAX_RETRANSMISSIONS 4
 #define BROADCAST_CHANNEL 128
 #define RUNICAST_CHANNEL  120
 #define ARRAY_SIZE 40 // Numer of nodes in cluster
 #define CLOCK_WAIT 10
-static float r = 0.5;
-static int debug = 1; // Use to toggle debug messages
 static int rc_wait_reply = 0; // Wait until we receive a message
 
 
@@ -78,7 +82,7 @@ static void createQueue(struct unicastMessage message)
 	struct runicastQueueItem *ptr = (struct runicastQueueItem*)malloc(sizeof(struct runicastQueueItem));
 	ptr->msg = message;
 	ptr->next = NULL;
-	
+
 	head = current = ptr;
 }
 
@@ -88,14 +92,16 @@ static void addQueueItem(struct unicastMessage message)
     {
     	createQueue(message);
     }
-    
-    struct runicastQueueItem *ptr = (struct runicastQueueItem*)malloc(sizeof(struct runicastQueueItem));
-	ptr->msg = message;
-	ptr->next = NULL;
-	current->next = ptr;
-	current = ptr;
-	
+    else
+    {
+        struct runicastQueueItem *ptr = (struct runicastQueueItem*)malloc(sizeof(struct runicastQueueItem));
+        ptr->msg = message;
+        ptr->next = NULL;
+        current->next = ptr;
+        current = ptr;
+    }
 }
+
 static struct unicastMessage popQueueItem()
 {
     struct runicastQueueItem *ptr = NULL;
@@ -104,7 +110,6 @@ static struct unicastMessage popQueueItem()
     struct unicastMessage res = ptr->msg;
     free(ptr);
     return res;
-	
 }
 
 static int queueHasElement()
