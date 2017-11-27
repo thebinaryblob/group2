@@ -206,8 +206,6 @@ static void send_broadcast()
 /* Runicast receiver. Calculate time difference */
 static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seqno)
 {
-	                printf("beep8\n");
-
     struct unicastMessage runmsg_received;
     packetbuf_copyto(&runmsg_received);
 
@@ -218,8 +216,6 @@ static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seq
     
     if(runmsg_received.answer_expected == 1)
     {
-    	                printf("beep7\n");
-
         if(debug){printf("Answering to %d. (Add element to queue.)\n", runmsg_received.id);}
         struct unicastMessage reply_msg;
         reply_msg.id = node_id;
@@ -254,8 +250,6 @@ static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seq
         clock_set(newtime);
         // Inform the etimer library that the system clock has changed
         etimer_request_poll();
-                        printf("beep6\n");
-
         printf("Set time for node %d: %d.\n", node_id, (uint16_t)clock_time());
         if(debug){printf("###############################################\n");}
         rc_wait_reply = 0;
@@ -296,12 +290,10 @@ PROCESS_THREAD(main_process, ev, data)
         // Neighborhood Discovery Phase
         // Send broadcast and wait for callback
         send_broadcast();
-                printf("!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-
         // Set timer
         etimer_set(&ef, CLOCK_WAIT*CLOCK_SECOND);
         PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&ef));
-                printf("beep1\n");
+                printf("!!!!!!!!!!!!!!!!!!!!!!!!!\n");
 
 
 
@@ -310,7 +302,6 @@ PROCESS_THREAD(main_process, ev, data)
         static int i;
         for(i = 0; i < array_occupied; i++)
         {
-                printf("beep2\n");
 
             rc_wait_reply = 1;
 
@@ -322,8 +313,6 @@ PROCESS_THREAD(main_process, ev, data)
             msg.id = node_id;
             msg.dest = neighbor_table[i].id;
             addQueueItem(msg);
-                            printf("beep3\n");
-
 
             while(rc_wait_reply)
             {
@@ -352,8 +341,6 @@ PROCESS_THREAD(runicast_sender, ev, data)
     {
         if(queueHasElement() && !runicast_is_transmitting(&runicast))
         {
-        	                printf("beep4\n");
-
             struct unicastMessage msg = popQueueItem();
             rimeaddr_t addr;
             addr.u8[0] = msg.dest;
@@ -362,7 +349,6 @@ PROCESS_THREAD(runicast_sender, ev, data)
 
             packetbuf_copyfrom(&msg, sizeof(msg));
             runicast_send(&runicast, &addr, MAX_RETRANSMISSIONS);
-                printf("beep5\n");
 
             /* turn on and of green led */
             leds_on(LEDS_GREEN);
