@@ -20,7 +20,8 @@ static int debug = 0; // Use to toggle debug messages
 #define BROADCAST_CHANNEL 128
 #define RUNICAST_CHANNEL  120
 #define ARRAY_SIZE 40 // Numer of nodes in cluster
-#define CLOCK_WAIT 10
+#define CLOCK_WAIT 10 // Wait for reploy when building neighbor table
+#define CLOCK_WAIT_RUNICAST 2 // Wait befor calling the next neighbor
 static int rc_wait_reply = 0; // Wait until we receive a message
 
 
@@ -49,8 +50,8 @@ struct runicastQueueItem {
 
 /* Variable declaration */
 static struct neighbor neighbor_table[ARRAY_SIZE];
-static int array_occupied; /* Number of elements in array */
-static struct etimer ef;
+static int array_occupied = 0; /* Number of elements in array */
+static struct etimer ef, et, er;
 static struct etimer leds_off_timer;
 static struct broadcastMessage tmSent;
 // Broadcast
@@ -79,6 +80,8 @@ static struct runicastQueueItem *current = NULL;
 
 static void createQueue(struct unicastMessage message)
 {
+    
+    if(debug){printf("Creating queue with a message to node %d.\n", message.dest);}
 	struct runicastQueueItem *ptr = (struct runicastQueueItem*)malloc(sizeof(struct runicastQueueItem));
 	ptr->msg = message;
 	ptr->next = NULL;
@@ -90,10 +93,13 @@ static void addQueueItem(struct unicastMessage message)
 {
     if(NULL == head)
     {
+        if(debug){printf("Message for node %d first in queue. Calling create method.\n", message.dest);}
+        // printf("beep\n");
     	createQueue(message);
     }
     else
     {
+        if(debug){printf("Add message for node %d to queue.\n", message.dest);}
         struct runicastQueueItem *ptr = (struct runicastQueueItem*)malloc(sizeof(struct runicastQueueItem));
         ptr->msg = message;
         ptr->next = NULL;
@@ -140,6 +146,7 @@ static int find_neighbor(struct neighbor n, struct neighbor ntb[])
         }
     }
     if(debug){printf("Neighbor not found in array.\n");}
+    // printf("beep\n");
     return -1;
 }
 
@@ -148,6 +155,7 @@ static int find_neighbor(struct neighbor n, struct neighbor ntb[])
 static void add_neighbor(struct neighbor n, struct neighbor ntb[])
 {
     if(debug){printf("Add new neighbor with id %d to array at position %d.\n", n.id, array_occupied);}
+    // printf("beep\n");
     ntb[array_occupied] = n;
     array_occupied++;
 }
@@ -158,8 +166,7 @@ clock_time_t calc_new_time(clock_time_t t)
 	if(debug){printf("clock_time: %d.\n", clock_time());}
 	if(debug){printf("t: %d.\n", t);}
 	if(debug){printf("(clock_time-t)/r: %d.\n", (clock_time() - t)/r);}
-	
-    
+
     clock_time_t result = clock_time() - (clock_time() - t)/r;
     return result;
 }
@@ -171,6 +178,7 @@ static void recv_bc(struct broadcast_conn *c, rimeaddr_t *from)
     packetbuf_copyto(&rsc_msg);
 
     if(debug){printf("#### Receiving Broadcast from node %d ####\n", from->u8[0]);}
+    // printf("beep\n");
 
     leds_on(LEDS_RED);
     clock_wait(CLOCK_SECOND);
@@ -209,13 +217,13 @@ static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seq
     struct unicastMessage runmsg_received;
     packetbuf_copyto(&runmsg_received);
 
-    if(debug){printf("#### Receiving Runicast from node %d ####\n", from->u8[0]);}
     leds_on(LEDS_GREEN);
     clock_wait(CLOCK_SECOND);
     leds_off(LEDS_ALL);
     
     if(runmsg_received.answer_expected == 1)
     {
+        if(debug){printf("#### Receiving Runicast from node %d. Answer is expected ####\n", from->u8[0]);}
         if(debug){printf("Answering to %d. (Add element to queue.)\n", runmsg_received.id);}
         struct unicastMessage reply_msg;
         reply_msg.id = node_id;
@@ -227,7 +235,7 @@ static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seq
     }
     else
     {
-        if(debug){printf("No answer required. Computing rtt.\n");}
+        if(debug){printf("#### Receiving Runicast from node %d. Answer is NOT expected ####\n", from->u8[0]);}
 
         // rtt
         struct neighbor n;
@@ -263,7 +271,7 @@ static void sent_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retra
 }
 static void timedout_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retransmissions)
 {
-    if(debug){printf("runicast message timed out when sending to %d.%d, retransmissions %d\n", to->u8[0], to->u8[1], retransmissions);}
+    printf("runicast message timed out when sending to %d.%d, retransmissions %d\n", to->u8[0], to->u8[1], retransmissions);
     // Could not send. Therefore, we do not expect a reply.
      rc_wait_reply = 0;
 
@@ -293,17 +301,14 @@ PROCESS_THREAD(main_process, ev, data)
         // Set timer
         etimer_set(&ef, CLOCK_WAIT*CLOCK_SECOND);
         PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&ef));
-                printf("!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-
-
 
         // Time Adjustment Phase
         // Send Runicast to ever neighbor
         static int i;
+        printf("Array occupied is %d.\n", array_occupied);
         for(i = 0; i < array_occupied; i++)
         {
 
-            rc_wait_reply = 1;
 
             /* compose and send message */
             struct unicastMessage msg;
@@ -313,18 +318,25 @@ PROCESS_THREAD(main_process, ev, data)
             msg.id = node_id;
             msg.dest = neighbor_table[i].id;
             addQueueItem(msg);
+            rc_wait_reply = 1;
 
-            while(rc_wait_reply)
+            if(rc_wait_reply)
             {
-              //  if(debug){printf("Awaiting reply from %d.\n", neighbor_table[i].id);}
-                PROCESS_PAUSE();
+                // Wait for reply until timeout is reached
+                if(debug){printf("Awaiting reply from %d.\n", neighbor_table[i].id);}
+                etimer_set(&et, CLOCK_WAIT_RUNICAST*CLOCK_SECOND);
+                PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
+                rc_wait_reply = 0;
             }
-
         }
 
-        if(debug){printf("Finished round %d. Waiting and start again.\n", looper++);}
+        looper++;
+        if(debug){printf("###########################################\n");}
+        if(debug){printf("Finished round %d. Waiting and start again.\n", looper);}
+        if(debug){printf("###########################################\n");}
+        etimer_set(&ef, CLOCK_WAIT*CLOCK_SECOND);
+        PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&ef));
 
-        // Todo: Evaluation
     }
 
     PROCESS_END();
@@ -337,6 +349,9 @@ PROCESS_THREAD(runicast_sender, ev, data)
     PROCESS_BEGIN();
     // Open the communication channels to be able to send/receive packets
     runicast_open(&runicast, RUNICAST_CHANNEL, &runicast_callbacks);
+    // Set timer
+    etimer_set(&er, CLOCK_WAIT*CLOCK_SECOND);
+    PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&er));
     while(1)
     {
         if(queueHasElement() && !runicast_is_transmitting(&runicast))
@@ -346,19 +361,21 @@ PROCESS_THREAD(runicast_sender, ev, data)
             addr.u8[0] = msg.dest;
             addr.u8[1] = 0;
 
-
             packetbuf_copyfrom(&msg, sizeof(msg));
             runicast_send(&runicast, &addr, MAX_RETRANSMISSIONS);
 
             /* turn on and of green led */
             leds_on(LEDS_GREEN);
             if(debug){printf("#### Sending Runicast to %d ####\n", (int)addr.u8[0]);}
+            // printf("beep\n");
             clock_wait(CLOCK_SECOND);
             leds_off(LEDS_ALL);
         }
       	else
         {
             // if(debug){printf("#### Queque empty or runicast sending. Waiting ... ####\n");}
+            // printf("beep\n");
+            PROCESS_PAUSE();
         }
       	PROCESS_PAUSE();
     }
