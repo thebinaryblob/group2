@@ -48,7 +48,7 @@ struct runicastQueueItem {
 };
 
 /* Variable declaration */
-static struct neighbor neighbor_table[ARRAY_SIZE];
+static struct neighbor *neighbor_table;
 static int array_occupied; /* Number of elements in array */
 static struct etimer ef;
 static struct etimer leds_off_timer;
@@ -128,12 +128,12 @@ static int queueHasElement()
 
 
 /* Return array position of neighbor or -1 */
-static int find_neighbor(struct neighbor n, struct neighbor ntb[])
+static int find_neighbor(struct neighbor n, struct neighbor *ntb)
 {
     static int i;
     for(i = 0; i < ARRAY_SIZE; i++)
     {
-        if (ntb[i].id == n.id)
+        if ((ntb + i)->id == n.id)
         {
             if(debug){printf("Found neighbor at position %d.\n", i);}
             return i;
@@ -145,10 +145,10 @@ static int find_neighbor(struct neighbor n, struct neighbor ntb[])
 
 
 /* Add neighbor to array and increasea index */
-static void add_neighbor(struct neighbor n, struct neighbor ntb[])
+static void add_neighbor(struct neighbor n, struct neighbor *ntb)
 {
     if(debug){printf("Add new neighbor with id %d to array at position %d.\n", n.id, array_occupied);}
-    ntb[array_occupied] = n;
+    *(ntb + array_occupied) = n;
     array_occupied++;
 }
 
@@ -284,6 +284,8 @@ PROCESS_THREAD(main_process, ev, data)
     broadcast_open(&bc, BROADCAST_CHANNEL, &broadcast_callback);
 
     static int looper = 0;
+    
+    neighbor_table = (struct neighbor *)malloc(sizeof(struct neighbor)*ARRAY_SIZE);
 
     while(1)
     {
@@ -311,7 +313,7 @@ PROCESS_THREAD(main_process, ev, data)
             msg.time_receiver = 0;
             msg.answer_expected = 1;
             msg.id = node_id;
-            msg.dest = neighbor_table[i].id;
+            msg.dest = (neighbor_table + i)->id;
             addQueueItem(msg);
 
             while(rc_wait_reply)
@@ -327,6 +329,7 @@ PROCESS_THREAD(main_process, ev, data)
         // Todo: Evaluation
     }
 
+    free(neighbor_table);
     PROCESS_END();
 }
 PROCESS(runicast_sender, "Runicast sender");
