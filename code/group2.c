@@ -16,7 +16,7 @@ static int debug = 0; // Use to toggle debug messages
 
 
 /* constants */
-#define MAX_RETRANSMISSIONS 4
+#define MAX_RETRANSMISSIONS 10
 #define BROADCAST_CHANNEL 128
 #define RUNICAST_CHANNEL  120
 #define ARRAY_SIZE 40 // Numer of nodes in cluster
@@ -77,12 +77,14 @@ static void sent_runicast(struct runicast_conn *c, rimeaddr_t *to, uint8_t retra
 
 static struct runicastQueueItem *head = NULL;
 static struct runicastQueueItem *current = NULL;
+MEMB(queue,struct runicastQueueItem,20);
 
 static void createQueue(struct unicastMessage message)
 {
     
     if(debug){printf("Creating queue with a message to node %d.\n", message.dest);}
-	struct runicastQueueItem *ptr = (struct runicastQueueItem*)malloc(sizeof(struct runicastQueueItem));
+	struct runicastQueueItem *ptr;
+	ptr = memb_alloc(&queue);
 	ptr->msg = message;
 	ptr->next = NULL;
 
@@ -100,7 +102,8 @@ static void addQueueItem(struct unicastMessage message)
     else
     {
         if(debug){printf("Add message for node %d to queue.\n", message.dest);}
-        struct runicastQueueItem *ptr = (struct runicastQueueItem*)malloc(sizeof(struct runicastQueueItem));
+        struct runicastQueueItem *ptr;;
+    	ptr = memb_alloc(&queue);
         ptr->msg = message;
         ptr->next = NULL;
         current->next = ptr;
@@ -114,7 +117,7 @@ static struct unicastMessage popQueueItem()
     ptr = head;
     head = head->next;
     struct unicastMessage res = ptr->msg;
-    free(ptr);
+    memb_free(&queue, ptr);
     return res;
 }
 
@@ -255,6 +258,15 @@ static void recv_runicast(struct runicast_conn *c, rimeaddr_t *from, uint8_t seq
         if(debug){printf("###############################################\n");}
         if(debug){printf("Old time: %d.\n", (uint16_t)clock_time());}
         if(debug){printf("New time: %d.\n", (uint16_t)newtime);}
+
+
+		clock_time_t diff = clock_time - newtime;
+		/* Adjust Timers */
+		etimer_adjust(&ef,diff);
+		etimer_adjust(&et,diff);
+		etimer_adjust(&er,diff);
+		etimer_adjust(&leds_off_timer,diff);
+
         clock_set(newtime);
         // Inform the etimer library that the system clock has changed
         etimer_request_poll();
@@ -290,6 +302,9 @@ PROCESS_THREAD(main_process, ev, data)
 
     // Open the communication channels to be able to send/receive packets
     broadcast_open(&bc, BROADCAST_CHANNEL, &broadcast_callback);
+
+    // Open the communication channels to be able to send/receive packets
+    runicast_open(&runicast, RUNICAST_CHANNEL, &runicast_callbacks);
 
     static int looper = 0;
 
@@ -347,8 +362,7 @@ PROCESS_THREAD(runicast_sender, ev, data)
     // Gracefully close the communication channels at the end
     PROCESS_EXITHANDLER(runicast_close(&runicast);)
     PROCESS_BEGIN();
-    // Open the communication channels to be able to send/receive packets
-    runicast_open(&runicast, RUNICAST_CHANNEL, &runicast_callbacks);
+
     // Set timer
     etimer_set(&er, CLOCK_WAIT*CLOCK_SECOND);
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&er));
