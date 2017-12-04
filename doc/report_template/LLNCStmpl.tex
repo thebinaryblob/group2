@@ -22,7 +22,7 @@
 %\author{Author Name}
 
 %For multiple authors:
-\author{Authors} 
+\author{Balz Aschwanden, David Boesiger, Jovana Micic,  Raoul Norman Grossenbacher} 
 
 
 %If using runnningheads you can abbreviate the author name on even pages:
@@ -31,10 +31,11 @@
 %\tocauthor{enhanced author name}
 
 %For a single institute
-%\institute{University of Bern \email{email address}}
+%\institute{University of Bern}
 
 % If authors are from different institutes 
-%\institute{University of Bern \email{\{jovana.micic, david.boesiger\}@students.unibe.ch}}
+\institute{University of Bern \newline \{balz.aschwanden, david.boesiger, jovana.micic, raoul.grossenbacher\}@students.unibe.ch}
+
 
 %to remove your email just remove '\email{email address}'
 % you can also remove the thanks footnote by removing '\thanks{Thank you to...}'
@@ -88,6 +89,7 @@ Methods: especially, describe the methods used to realize the protocol
 (functions in the code and their functionality).
 \end{comment}
 \section{Methods}
+In the following part we will show implemented code for recieving and sending unicast messages. 
 
 
 \begin{comment}
@@ -95,7 +97,12 @@ Experimental setup/Measurement procedure: The experimental setup, the
 differences of the experimental series, the different parameters used, including local
 sensor setup and TARWIS testbed.
 \end{comment}
-\section{Experimental setup/Measurement procedure}
+\section{Experimental setup}
+There were two phases of experiment. In the first phase we tested our program using Telos nodes and in the second phase we uploaded our code to TARWIS platform. We tried different values for\textit{r-value} and r\textit{unicast interval}. In addition, we run the code with different MAC protocols. In the first version of the program we used default NullMAC protocol and in the second we used X-MAC protocol. 
+
+By protocol alghoritm, \textit{r-value} needs to be value from range of zero to one. We chose to test our code for five different r-values: 0.1, 0.25, 0.5, 0.75 and 0.9. 
+
+For \textit{unicast interval} value we chose values from 1 to 5 seconds. 
 
 \begin{comment}
 Results and Analysis: Analyze the results which are obtained by local sensors and
