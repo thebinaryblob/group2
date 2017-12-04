@@ -244,7 +244,8 @@ PROCESS_THREAD(main_process, ev, data)
         }
 
         // End of Loop
-        if(!(numIter % PRINT_OUTPUT))
+        static int dontPrint = numIter % PRINT_OUTPUT;
+        if(!dontPrint)
         {
             printf("LoopTime:%d:%d\n", numIter, (uint16_t)clock_time());
         }
