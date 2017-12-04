@@ -8,11 +8,11 @@
 #include "sys/rtimer.h" /* for timestamps */
 #include "lib/random.h" /* for random numbers */
 
-/* Change these variables for thesting */
-static clock_time_t r = 2;
-static int debug = 0; // Use to toggle debug messages
-static int numIter = 0; // Number of iterations
+/* Change these variables for testing */
+static clock_time_t rMultiplier = 1;
+static clock_time_t rDevider = 5;
 #define CLOCK_WAIT_UNICAST 2 // Wait befor calling the next neighbor
+static int debug = 0; // Use to toggle debug messages
 
 /* constants */
 #define BROADCAST_CHANNEL 128
@@ -21,6 +21,7 @@ static int numIter = 0; // Number of iterations
 #define CLOCK_WAIT 10 // Wait for reploy when building neighbor table
 #define TIMEOUT_WAIT 2 // Timeout for unicast reply
 #define PRINT_OUTPUT 5; // Print output if interations % PRINT_OUTPUT = 0
+static int numIter = 0; // Number of iterations
 
 /* Datatype declaration */
 struct broadcastMessage {
@@ -99,7 +100,7 @@ static clock_time_t calc_new_time(clock_time_t senderTime, clock_time_t receiver
 {
     clock_time_t rtt = clock_time() - receiverTimeOld;
     clock_time_t neighborTime = senderTime + rtt/2;
-    clock_time_t result = clock_time() - (clock_time() - neighborTime)/r;
+    clock_time_t result = clock_time() - (clock_time() - neighborTime) * rMultiplier/rDevider;
 	if(debug){printf("Result of calc_new_time: %d.\n", (int)result);}
     return result;
 }
