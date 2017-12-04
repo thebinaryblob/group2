@@ -12,7 +12,8 @@
 static clock_time_t rMultiplier = 1;
 static clock_time_t rDevider = 5;
 #define CLOCK_WAIT_UNICAST 2 // Wait befor calling the next neighbor
-static int debug = 0; // Use to toggle debug messages
+static uint8_t debug = 0; // Use to toggle debug messages
+static int dontPrint;
 
 /* constants */
 #define BROADCAST_CHANNEL 128
@@ -245,7 +246,7 @@ PROCESS_THREAD(main_process, ev, data)
         }
 
         // End of Loop
-        static int dontPrint = numIter % PRINT_OUTPUT;
+        dontPrint = numIter % PRINT_OUTPUT;
         if(!dontPrint)
         {
             printf("LoopTime:%d:%d\n", numIter, (uint16_t)clock_time());
