@@ -10,8 +10,8 @@
 
 /* Change these variables for testing */
 static clock_time_t rMultiplier = 1;
-static clock_time_t rDevider = 5;
-#define CLOCK_WAIT_UNICAST 2 // Wait befor calling the next neighbor
+static clock_time_t rDevider = 2;
+#define CLOCK_WAIT_UNICAST 1 // Wait befor calling the next neighbor
 static uint8_t debug = 0; // Use to toggle debug messages
 static int dontPrint;
 
@@ -240,7 +240,7 @@ PROCESS_THREAD(main_process, ev, data)
             clock_wait(CLOCK_SECOND / 2);
             leds_off(LEDS_GREEN);
 
-            etimer_set(&timeoutTimer, CLOCK_WAIT*CLOCK_SECOND);
+            etimer_set(&timeoutTimer, CLOCK_WAIT_UNICAST*CLOCK_SECOND);
             PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&loopTimer));
             neighborTable[i].answer_expected = 0;
         }
