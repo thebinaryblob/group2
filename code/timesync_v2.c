@@ -256,8 +256,8 @@ PROCESS_THREAD(main_process, ev, data)
 	
 	if(offset_count > 0)
 	{
-	    printf("Offset:%d",(uint16_t) offset);
-	    clock_time_t newtime = clock_time() + offset * rMultiplier/rDevider;
+	    printf("Offset:%d.\n",(uint16_t) offset);
+	    clock_time_t newtime = clock_time() - offset * rMultiplier/rDevider;
 	    clock_set(newtime);
 	    clock_time_t diff = clock_time() - newtime;
             etimer_adjust(&loopTimer,diff);
