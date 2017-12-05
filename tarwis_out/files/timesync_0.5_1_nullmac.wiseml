@@ -1,0 +1,2004 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wiseml version="1.0" xmlns="http://wisebed.eu/ns/wiseml/1.0">
+<setup>
+<origin>
+	<x>46.953515</x>
+	<y>7.439878</y>
+	<z>550</z>
+	<phi>0</phi>
+	<theta>0</theta>
+</origin>
+<timeinfo>
+	<start>2017-12-05T07:45:00Z</start>
+	<end>2017-12-05T07:59:59Z</end>
+	<unit>seconds</unit>
+</timeinfo>
+<coordinateType>XYZ</coordinateType>
+<description>UBERNTestbed</description>
+<defaults>
+<link>
+	<encrypted>false</encrypted>
+	<virtual>false</virtual>
+	<rssi datatype="decimal" unit="dBm" default="-90"/>
+</link>
+</defaults>
+<node id="urn:wisebed:node:ubern:1">
+<position>
+	<x>45</x>
+	<y>25</y>
+	<z>52</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 1 - Office 205 (Hurni)</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:10">
+<position>
+	<x>45</x>
+	<y>90</y>
+	<z>52</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 10 (Anwander, Wagenknecht)</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:11">
+<position>
+	<x>35</x>
+	<y>20</y>
+	<z>52</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 11, Coffee Room</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:12">
+<position>
+	<x>37</x>
+	<y>55</y>
+	<z>52</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 12, Hallway 2nd Floor</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:13">
+<position>
+	<x>40</x>
+	<y>45</y>
+	<z>80</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 13 - Hallway 3rd Floor</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:14">
+<position>
+	<x>19</x>
+	<y>80</y>
+	<z>52</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 14 (Fischer)</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:15">
+<position>
+	<x>16</x>
+	<y>55</y>
+	<z>22</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 15 (TIL)</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:16">
+<position>
+	<x>16</x>
+	<y>30</y>
+	<z>22</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 16 (TIL)</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:17">
+<position>
+	<x>6</x>
+	<y>55</y>
+	<z>0</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 17 (-111)</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:18">
+<position>
+	<x>18</x>
+	<y>55</y>
+	<z>0</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 18 (-111), Window</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:19">
+<position>
+	<x>38</x>
+	<y>40</y>
+	<z>22</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 19 Coffee Room, CGG</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:2">
+<position>
+	<x>53</x>
+	<y>33</y>
+	<z>52</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 2 - Office 204 (Anastasiades)</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:20">
+<position>
+	<x>30</x>
+	<y>60</y>
+	<z>95</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 20 Outdoor Node, Small Tower</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:21">
+<position>
+	<x>48</x>
+	<y>65</y>
+	<z>22</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 21, CGG Donatsch</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:22">
+<position>
+	<x>3</x>
+	<y>75</y>
+	<z>22</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 22, TIL</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:23">
+<position>
+	<x>20</x>
+	<y>35</y>
+	<z>52</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 23, FKI Riesen/Jackson</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:24">
+<position>
+	<x>45</x>
+	<y>35</y>
+	<z>22</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 24, CGG Wan Yen</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:25">
+<position>
+	<x>45</x>
+	<y>98</y>
+	<z>22</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 25, CGG Pool</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:26">
+<position>
+	<x>80</x>
+	<y>10</y>
+	<z>80</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 26, SCG Large Office 2nd Floor</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:27">
+<position>
+	<x>90</x>
+	<y>10</y>
+	<z>80</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 27, SCG Large Office 2nd Floor</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:28">
+<position>
+	<x>85</x>
+	<y>10</y>
+	<z>57</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 28, IAM Meeting Room SCG Building 1st Floor</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:29">
+<position>
+	<x>78</x>
+	<y>63</y>
+	<z>57</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 29, Room 101, 1st Floor</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:3">
+<position>
+	<x>20</x>
+	<y>15</y>
+	<z>80</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 3 - Student Pool 1</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:30">
+<position>
+	<x>80</x>
+	<y>75</y>
+	<z>80</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 30, SCG Student Pool Room 2nd Floor</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:31">
+<position>
+	<x>80</x>
+	<y>100</y>
+	<z>80</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 31, SCG Student Pool Room 2nd Floor</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:32">
+<position>
+	<x>90</x>
+	<y>100</y>
+	<z>80</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 32, SCG Last Room 2nd Floor</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:33">
+<position>
+	<x>89</x>
+	<y>10</y>
+	<z>57</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 33, SCG Jorge Ressia 1st Floor</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:34">
+<position>
+	<x>78</x>
+	<y>78</y>
+	<z>57</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 34, SCG Mircea Lungu 1st Floor</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:35">
+<position>
+	<x>93</x>
+	<y>78</y>
+	<z>57</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 35, SCG Toon Verwaest 1st Floor</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:36">
+<position>
+	<x>92</x>
+	<y>33</y>
+	<z>57</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 36, SCG Jorge Ressia 1st Floor</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:37">
+<position>
+	<x>85</x>
+	<y>33</y>
+	<z>57</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 37, IAM Meeting Room SCG Building 1st Floor</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:38">
+<position>
+	<x>90</x>
+	<y>100</y>
+	<z>85</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 38, SCG Last Room 2nd Floor</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:39">
+<position>
+	<x>53</x>
+	<y>53</y>
+	<z>80</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 39 - Seminar Room 302</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:4">
+<position>
+	<x>20</x>
+	<y>39</y>
+	<z>80</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 4 - Hallway 3rd Floor</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:40">
+<position>
+	<x>37</x>
+	<y>15</y>
+	<z>80</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 40, 3rd Floor TIL Room</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:5">
+<position>
+	<x>47</x>
+	<y>85</y>
+	<z>80</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 5 - Seminar Room 302</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:6">
+<position>
+	<x>52</x>
+	<y>30</y>
+	<z>80</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 6 - Server Room, in Front of PlanetLab node</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:7">
+<position>
+	<x>10</x>
+	<y>70</y>
+	<z>80</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 7 - Student Pool 2, Window</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:8">
+<position>
+	<x>5</x>
+	<y>60</y>
+	<z>80</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 8 - Student Pool 2</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+<node id="urn:wisebed:node:ubern:9">
+<position>
+	<x>55</x>
+	<y>80</y>
+	<z>52</z>
+</position>
+<gateway>true</gateway>
+<nodeType>TMoteSky</nodeType>
+<description>Node 9 (Staub, Zhao)</description>
+<capability>
+	<name>urn:wisebed:node:capability:temperature</name>
+	<datatype>decimal</datatype>
+	<unit>degrees</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_1</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:light_2</name>
+	<datatype>decimal</datatype>
+	<unit>lux</unit>
+	<default>0.00</default>
+	</capability>
+<capability>
+	<name>urn:wisebed:node:capability:relative_humidity</name>
+	<datatype>decimal</datatype>
+	<unit>percentage</unit>
+	<default>0.00</default>
+	</capability>
+</node>
+</setup>
+<trace id="experiment_p5oAo3uvvI_output">
+<timestamp>282.3449</timestamp>
+<node id="urn:wisebed:node:ubern:37">
+<data key="text">LoopTime:0:2730</data>
+</node>
+<timestamp>282.501777</timestamp>
+<node id="urn:wisebed:node:ubern:26">
+<data key="text">LoopTime:0:-8120</data>
+</node>
+<timestamp>283.929772</timestamp>
+<node id="urn:wisebed:node:ubern:5">
+<data key="text">LoopTime:2:10243</data>
+</node>
+<timestamp>284.192737</timestamp>
+<node id="urn:wisebed:node:ubern:10">
+<data key="text">LoopTime:2:-23990</data>
+</node>
+<timestamp>287.927496</timestamp>
+<node id="urn:wisebed:node:ubern:8">
+<data key="text">LoopTime:2:1565</data>
+</node>
+<timestamp>289.890749</timestamp>
+<node id="urn:wisebed:node:ubern:17">
+<data key="text">LoopTime:2:-19483</data>
+</node>
+<timestamp>293.0333</timestamp>
+<node id="urn:wisebed:node:ubern:15">
+<data key="text">LoopTime:2:-1424</data>
+</node>
+<timestamp>293.204618</timestamp>
+<node id="urn:wisebed:node:ubern:39">
+<data key="text">LoopTime:0:-494</data>
+</node>
+<timestamp>293.39379</timestamp>
+<node id="urn:wisebed:node:ubern:16">
+<data key="text">LoopTime:2:31973</data>
+</node>
+<timestamp>295.898758</timestamp>
+<node id="urn:wisebed:node:ubern:18">
+<data key="text">LoopTime:4:16575</data>
+</node>
+<timestamp>297.205527</timestamp>
+<node id="urn:wisebed:node:ubern:4">
+<data key="text">LoopTime:2:31224</data>
+</node>
+<timestamp>298.692296</timestamp>
+<node id="urn:wisebed:node:ubern:21">
+<data key="text">LoopTime:2:27495</data>
+</node>
+<timestamp>300.890021</timestamp>
+<node id="urn:wisebed:node:ubern:14">
+<data key="text">LoopTime:2:6953</data>
+</node>
+<timestamp>302.447798</timestamp>
+<node id="urn:wisebed:node:ubern:24">
+<data key="text">LoopTime:2:-22382</data>
+</node>
+<timestamp>304.955775</timestamp>
+<node id="urn:wisebed:node:ubern:3">
+<data key="text">LoopTime:4:-15316</data>
+</node>
+<timestamp>305.441376</timestamp>
+<node id="urn:wisebed:node:ubern:20">
+<data key="text">LoopTime:4:-623</data>
+</node>
+<timestamp>307.176762</timestamp>
+<node id="urn:wisebed:node:ubern:40">
+<data key="text">LoopTime:0:-8387</data>
+</node>
+<timestamp>307.447613</timestamp>
+<node id="urn:wisebed:node:ubern:1">
+<data key="text">LoopTime:4:-6696</data>
+</node>
+<timestamp>307.915499</timestamp>
+<node id="urn:wisebed:node:ubern:36">
+<data key="text">LoopTime:2:6817</data>
+</node>
+<timestamp>310.87315</timestamp>
+<node id="urn:wisebed:node:ubern:30">
+<data key="text">LoopTime:2:7940</data>
+</node>
+<timestamp>311.675699</timestamp>
+<node id="urn:wisebed:node:ubern:27">
+<data key="text">LoopTime:2:-28084</data>
+</node>
+<timestamp>312.015563</timestamp>
+<node id="urn:wisebed:node:ubern:13">
+<data key="text">LoopTime:2:6612</data>
+</node>
+<timestamp>312.39415</timestamp>
+<node id="urn:wisebed:node:ubern:38">
+<data key="text">LoopTime:2:-19916</data>
+</node>
+<timestamp>312.435854</timestamp>
+<node id="urn:wisebed:node:ubern:22">
+<data key="text">LoopTime:2:12544</data>
+</node>
+<timestamp>314.453397</timestamp>
+<node id="urn:wisebed:node:ubern:11">
+<data key="text">LoopTime:2:13841</data>
+</node>
+<timestamp>314.920135</timestamp>
+<node id="urn:wisebed:node:ubern:32">
+<data key="text">LoopTime:2:-6378</data>
+</node>
+<timestamp>315.419351</timestamp>
+<node id="urn:wisebed:node:ubern:35">
+<data key="text">LoopTime:2:2812</data>
+</node>
+<timestamp>315.905309</timestamp>
+<node id="urn:wisebed:node:ubern:31">
+<data key="text">LoopTime:2:27210</data>
+</node>
+<timestamp>320.671549</timestamp>
+<node id="urn:wisebed:node:ubern:23">
+<data key="text">LoopTime:2:-17254</data>
+</node>
+<timestamp>324.646822</timestamp>
+<node id="urn:wisebed:node:ubern:29">
+<data key="text">LoopTime:2:7287</data>
+</node>
+<timestamp>325.652862</timestamp>
+<node id="urn:wisebed:node:ubern:33">
+<data key="text">LoopTime:2:23604</data>
+</node>
+<timestamp>328.192243</timestamp>
+<node id="urn:wisebed:node:ubern:12">
+<data key="text">LoopTime:2:-25414</data>
+</node>
+<timestamp>328.438729</timestamp>
+<node id="urn:wisebed:node:ubern:28">
+<data key="text">LoopTime:2:10991</data>
+</node>
+<timestamp>328.968804</timestamp>
+<node id="urn:wisebed:node:ubern:17">
+<data key="text">LoopTime:4:-32097</data>
+</node>
+<timestamp>329.660965</timestamp>
+<node id="urn:wisebed:node:ubern:34">
+<data key="text">LoopTime:2:-28737</data>
+</node>
+<timestamp>330.690552</timestamp>
+<node id="urn:wisebed:node:ubern:19">
+<data key="text">LoopTime:2:-23419</data>
+</node>
+<timestamp>330.927014</timestamp>
+<node id="urn:wisebed:node:ubern:2">
+<data key="text">LoopTime:4:-32577</data>
+</node>
+<timestamp>333.462108</timestamp>
+<node id="urn:wisebed:node:ubern:18">
+<data key="text">LoopTime:6:5406</data>
+</node>
+<timestamp>334.942628</timestamp>
+<node id="urn:wisebed:node:ubern:20">
+<data key="text">LoopTime:6:-840</data>
+</node>
+<timestamp>335.420128</timestamp>
+<node id="urn:wisebed:node:ubern:7">
+<data key="text">LoopTime:4:-17474</data>
+</node>
+<timestamp>335.655857</timestamp>
+<node id="urn:wisebed:node:ubern:26">
+<data key="text">LoopTime:2:4725</data>
+</node>
+<timestamp>336.6568</timestamp>
+<node id="urn:wisebed:node:ubern:37">
+<data key="text">LoopTime:2:9681</data>
+</node>
+<timestamp>340.157777</timestamp>
+<node id="urn:wisebed:node:ubern:36">
+<data key="text">LoopTime:4:585</data>
+</node>
+<timestamp>345.700616</timestamp>
+<node id="urn:wisebed:node:ubern:21">
+<data key="text">LoopTime:4:-7201</data>
+</node>
+<timestamp>347.968552</timestamp>
+<node id="urn:wisebed:node:ubern:15">
+<data key="text">LoopTime:4:24863</data>
+</node>
+<timestamp>349.69908</timestamp>
+<node id="urn:wisebed:node:ubern:16">
+<data key="text">LoopTime:4:18397</data>
+</node>
+<timestamp>352.165661</timestamp>
+<node id="urn:wisebed:node:ubern:30">
+<data key="text">LoopTime:4:13225</data>
+</node>
+<timestamp>353.628636</timestamp>
+<node id="urn:wisebed:node:ubern:31">
+<data key="text">LoopTime:4:-29732</data>
+</node>
+<timestamp>354.382025</timestamp>
+<node id="urn:wisebed:node:ubern:25">
+<data key="text">LoopTime:2:-13927</data>
+</node>
+<timestamp>356.453678</timestamp>
+<node id="urn:wisebed:node:ubern:24">
+<data key="text">LoopTime:4:-30271</data>
+</node>
+<timestamp>358.623031</timestamp>
+<node id="urn:wisebed:node:ubern:38">
+<data key="text">LoopTime:4:-5618</data>
+</node>
+<timestamp>358.636287</timestamp>
+<node id="urn:wisebed:node:ubern:35">
+<data key="text">LoopTime:4:-32321</data>
+</node>
+<timestamp>359.919069</timestamp>
+<node id="urn:wisebed:node:ubern:5">
+<data key="text">MAC 05:00:00:00:00:00:00:00 Contiki-v1.0-6-gfcef3b9 started. Node id is set to 5.</data>
+</node>
+<timestamp>359.91921</timestamp>
+<node id="urn:wisebed:node:ubern:5">
+<data key="text">CSMA nullrdc, channel check rate 128 Hz, radio channel 26</data>
+</node>
+<timestamp>359.919365</timestamp>
+<node id="urn:wisebed:node:ubern:5">
+<data key="text">uIP started with IP address 172.16.5.0</data>
+</node>
+<timestamp>359.919501</timestamp>
+<node id="urn:wisebed:node:ubern:5">
+<data key="text">Starting &#39;Main process&#39;</data>
+</node>
+<timestamp>360.619237</timestamp>
+<node id="urn:wisebed:node:ubern:32">
+<data key="text">LoopTime:4:-31942</data>
+</node>
+<timestamp>360.952207</timestamp>
+<node id="urn:wisebed:node:ubern:20">
+<data key="text">LoopTime:8:-25428</data>
+</node>
+<timestamp>362.739947</timestamp>
+<node id="urn:wisebed:node:ubern:8">
+<data key="text">LoopTime:4:27070</data>
+</node>
+<timestamp>363.709183</timestamp>
+<node id="urn:wisebed:node:ubern:22">
+<data key="text">LoopTime:4:-20923</data>
+</node>
+<timestamp>363.976245</timestamp>
+<node id="urn:wisebed:node:ubern:10">
+<data key="text">LoopTime:4:-22816</data>
+</node>
+<timestamp>365.657656</timestamp>
+<node id="urn:wisebed:node:ubern:29">
+<data key="text">LoopTime:4:-28851</data>
+</node>
+<timestamp>366.205044</timestamp>
+<node id="urn:wisebed:node:ubern:17">
+<data key="text">LoopTime:6:-18145</data>
+</node>
+<timestamp>366.262908</timestamp>
+<node id="urn:wisebed:node:ubern:18">
+<data key="text">LoopTime:8:6880</data>
+</node>
+<timestamp>368.17242</timestamp>
+<node id="urn:wisebed:node:ubern:36">
+<data key="text">LoopTime:6:13601</data>
+</node>
+<timestamp>368.208198</timestamp>
+<node id="urn:wisebed:node:ubern:14">
+<data key="text">LoopTime:4:30470</data>
+</node>
+<timestamp>371.213196</timestamp>
+<node id="urn:wisebed:node:ubern:27">
+<data key="text">LoopTime:4:16294</data>
+</node>
+<timestamp>371.665119</timestamp>
+<node id="urn:wisebed:node:ubern:39">
+<data key="text">LoopTime:2:1377</data>
+</node>
+<timestamp>374.964756</timestamp>
+<node id="urn:wisebed:node:ubern:23">
+<data key="text">LoopTime:4:-13050</data>
+</node>
+<timestamp>378.369468</timestamp>
+<node id="urn:wisebed:node:ubern:34">
+<data key="text">LoopTime:4:-23254</data>
+</node>
+<timestamp>378.420003</timestamp>
+<node id="urn:wisebed:node:ubern:4">
+<data key="text">LoopTime:4:-24431</data>
+</node>
+<timestamp>378.688628</timestamp>
+<node id="urn:wisebed:node:ubern:33">
+<data key="text">LoopTime:4:-18274</data>
+</node>
+<timestamp>381.204958</timestamp>
+<node id="urn:wisebed:node:ubern:3">
+<data key="text">LoopTime:6:31626</data>
+</node>
+<timestamp>383.158099</timestamp>
+<node id="urn:wisebed:node:ubern:1">
+<data key="text">LoopTime:6:-13268</data>
+</node>
+<timestamp>383.182268</timestamp>
+<node id="urn:wisebed:node:ubern:28">
+<data key="text">LoopTime:4:17999</data>
+</node>
+<timestamp>388.961597</timestamp>
+<node id="urn:wisebed:node:ubern:20">
+<data key="text">LoopTime:10:-21844</data>
+</node>
+<timestamp>390.681739</timestamp>
+<node id="urn:wisebed:node:ubern:37">
+<data key="text">LoopTime:4:16598</data>
+</node>
+<timestamp>390.891009</timestamp>
+<node id="urn:wisebed:node:ubern:31">
+<data key="text">LoopTime:6:-8362</data>
+</node>
+<timestamp>392.379665</timestamp>
+<node id="urn:wisebed:node:ubern:26">
+<data key="text">LoopTime:4:-15510</data>
+</node>
+<timestamp>392.93731</timestamp>
+<node id="urn:wisebed:node:ubern:40">
+<data key="text">LoopTime:2:-3499</data>
+</node>
+<timestamp>393.931814</timestamp>
+<node id="urn:wisebed:node:ubern:21">
+<data key="text">LoopTime:6:-6433</data>
+</node>
+<timestamp>395.411996</timestamp>
+<node id="urn:wisebed:node:ubern:30">
+<data key="text">LoopTime:6:18760</data>
+</node>
+<timestamp>396.635664</timestamp>
+<node id="urn:wisebed:node:ubern:13">
+<data key="text">LoopTime:4:-8265</data>
+</node>
+<timestamp>397.920285</timestamp>
+<node id="urn:wisebed:node:ubern:11">
+<data key="text">LoopTime:4:-19261</data>
+</node>
+<timestamp>401.078443</timestamp>
+<node id="urn:wisebed:node:ubern:7">
+<data key="text">LoopTime:6:764</data>
+</node>
+<timestamp>401.392761</timestamp>
+<node id="urn:wisebed:node:ubern:32">
+<data key="text">LoopTime:6:27755</data>
+</node>
+<timestamp>401.413614</timestamp>
+<node id="urn:wisebed:node:ubern:36">
+<data key="text">LoopTime:8:-12980</data>
+</node>
+<timestamp>401.933047</timestamp>
+<node id="urn:wisebed:node:ubern:5">
+<data key="text">LoopTime:0:-7454</data>
+</node>
+<timestamp>402.223395</timestamp>
+<node id="urn:wisebed:node:ubern:18">
+<data key="text">LoopTime:10:-4228</data>
+</node>
+<timestamp>403.727255</timestamp>
+<node id="urn:wisebed:node:ubern:17">
+<data key="text">LoopTime:8:-18593</data>
+</node>
+<timestamp>403.891222</timestamp>
+<node id="urn:wisebed:node:ubern:19">
+<data key="text">LoopTime:4:-21819</data>
+</node>
+<timestamp>405.222543</timestamp>
+<node id="urn:wisebed:node:ubern:15">
+<data key="text">LoopTime:6:-31641</data>
+</node>
+<timestamp>405.425616</timestamp>
+<node id="urn:wisebed:node:ubern:2">
+<data key="text">LoopTime:6:-30962</data>
+</node>
+<timestamp>405.88582</timestamp>
+<node id="urn:wisebed:node:ubern:38">
+<data key="text">LoopTime:6:25334</data>
+</node>
+<timestamp>405.894836</timestamp>
+<node id="urn:wisebed:node:ubern:35">
+<data key="text">LoopTime:6:16825</data>
+</node>
+<timestamp>406.075962</timestamp>
+<node id="urn:wisebed:node:ubern:24">
+<data key="text">LoopTime:6:-26870</data>
+</node>
+<timestamp>406.434329</timestamp>
+<node id="urn:wisebed:node:ubern:16">
+<data key="text">LoopTime:6:3580</data>
+</node>
+<timestamp>408.415345</timestamp>
+<node id="urn:wisebed:node:ubern:29">
+<data key="text">LoopTime:6:12170</data>
+</node>
+<timestamp>414.933782</timestamp>
+<node id="urn:wisebed:node:ubern:12">
+<data key="text">LoopTime:4:-31729</data>
+</node>
+<timestamp>420.463672</timestamp>
+<node id="urn:wisebed:node:ubern:20">
+<data key="text">LoopTime:12:23875</data>
+</node>
+<timestamp>421.222973</timestamp>
+<node id="urn:wisebed:node:ubern:22">
+<data key="text">LoopTime:6:-1613</data>
+</node>
+<timestamp>425.891134</timestamp>
+<node id="urn:wisebed:node:ubern:27">
+<data key="text">LoopTime:6:-6920</data>
+</node>
+<timestamp>426.168228</timestamp>
+<node id="urn:wisebed:node:ubern:23">
+<data key="text">LoopTime:6:-32284</data>
+</node>
+<timestamp>427.960245</timestamp>
+<node id="urn:wisebed:node:ubern:25">
+<data key="text">LoopTime:4:-20259</data>
+</node>
+<timestamp>428.431841</timestamp>
+<node id="urn:wisebed:node:ubern:34">
+<data key="text">LoopTime:6:25180</data>
+</node>
+<timestamp>430.962446</timestamp>
+<node id="urn:wisebed:node:ubern:33">
+<data key="text">LoopTime:6:26252</data>
+</node>
+<timestamp>431.462073</timestamp>
+<node id="urn:wisebed:node:ubern:36">
+<data key="text">LoopTime:10:-30400</data>
+</node>
+<timestamp>431.940005</timestamp>
+<node id="urn:wisebed:node:ubern:31">
+<data key="text">LoopTime:8:6245</data>
+</node>
+<timestamp>433.246369</timestamp>
+<node id="urn:wisebed:node:ubern:18">
+<data key="text">LoopTime:12:2014</data>
+</node>
+<timestamp>436.138518</timestamp>
+<node id="urn:wisebed:node:ubern:8">
+<data key="text">LoopTime:6:-24650</data>
+</node>
+<timestamp>438.639056</timestamp>
+<node id="urn:wisebed:node:ubern:14">
+<data key="text">LoopTime:6:-10963</data>
+</node>
+<timestamp>441.646401</timestamp>
+<node id="urn:wisebed:node:ubern:17">
+<data key="text">LoopTime:10:-6101</data>
+</node>
+<timestamp>442.463983</timestamp>
+<node id="urn:wisebed:node:ubern:21">
+<data key="text">LoopTime:8:14712</data>
+</node>
+<timestamp>442.897987</timestamp>
+<node id="urn:wisebed:node:ubern:30">
+<data key="text">LoopTime:8:24839</data>
+</node>
+<timestamp>443.473181</timestamp>
+<node id="urn:wisebed:node:ubern:32">
+<data key="text">LoopTime:8:26990</data>
+</node>
+<timestamp>444.617683</timestamp>
+<node id="urn:wisebed:node:ubern:10">
+<data key="text">LoopTime:6:4037</data>
+</node>
+<timestamp>445.946567</timestamp>
+<node id="urn:wisebed:node:ubern:37">
+<data key="text">LoopTime:6:23673</data>
+</node>
+<timestamp>446.122729</timestamp>
+<node id="urn:wisebed:node:ubern:26">
+<data key="text">LoopTime:6:27838</data>
+</node>
+<timestamp>447.105724</timestamp>
+<node id="urn:wisebed:node:ubern:28">
+<data key="text">LoopTime:6:26182</data>
+</node>
+<timestamp>447.434117</timestamp>
+<node id="urn:wisebed:node:ubern:38">
+<data key="text">LoopTime:8:-24874</data>
+</node>
+<timestamp>449.965927</timestamp>
+<node id="urn:wisebed:node:ubern:20">
+<data key="text">LoopTime:14:9107</data>
+</node>
+<timestamp>451.221024</timestamp>
+<node id="urn:wisebed:node:ubern:29">
+<data key="text">LoopTime:8:5936</data>
+</node>
+<timestamp>454.476967</timestamp>
+<node id="urn:wisebed:node:ubern:1">
+<data key="text">LoopTime:8:-24163</data>
+</node>
+<timestamp>456.210099</timestamp>
+<node id="urn:wisebed:node:ubern:35">
+<data key="text">LoopTime:8:-21200</data>
+</node>
+<timestamp>456.480008</timestamp>
+<node id="urn:wisebed:node:ubern:39">
+<data key="text">LoopTime:4:-591</data>
+</node>
+<timestamp>459.569848</timestamp>
+<node id="urn:wisebed:node:ubern:15">
+<data key="text">LoopTime:8:-5015</data>
+</node>
+<timestamp>459.852887</timestamp>
+<node id="urn:wisebed:node:ubern:3">
+<data key="text">LoopTime:8:-5256</data>
+</node>
+<timestamp>461.858293</timestamp>
+<node id="urn:wisebed:node:ubern:4">
+<data key="text">LoopTime:6:29587</data>
+</node>
+<timestamp>462.07267</timestamp>
+<node id="urn:wisebed:node:ubern:16">
+<data key="text">LoopTime:8:-20524</data>
+</node>
+<timestamp>462.478599</timestamp>
+<node id="urn:wisebed:node:ubern:24">
+<data key="text">LoopTime:8:22428</data>
+</node>
+<timestamp>463.972332</timestamp>
+<node id="urn:wisebed:node:ubern:36">
+<data key="text">LoopTime:12:-3439</data>
+</node>
+<timestamp>466.847754</timestamp>
+<node id="urn:wisebed:node:ubern:7">
+<data key="text">LoopTime:8:-2643</data>
+</node>
+<timestamp>470.285747</timestamp>
+<node id="urn:wisebed:node:ubern:18">
+<data key="text">LoopTime:14:-14010</data>
+</node>
+<timestamp>474.488132</timestamp>
+<node id="urn:wisebed:node:ubern:19">
+<data key="text">LoopTime:6:28895</data>
+</node>
+<timestamp>476.23567</timestamp>
+<node id="urn:wisebed:node:ubern:31">
+<data key="text">LoopTime:10:-20755</data>
+</node>
+<timestamp>476.497947</timestamp>
+<node id="urn:wisebed:node:ubern:22">
+<data key="text">LoopTime:8:20331</data>
+</node>
+<timestamp>477.975324</timestamp>
+<node id="urn:wisebed:node:ubern:20">
+<data key="text">LoopTime:16:-8924</data>
+</node>
+<timestamp>477.992633</timestamp>
+<node id="urn:wisebed:node:ubern:23">
+<data key="text">LoopTime:8:-24757</data>
+</node>
+<timestamp>478.255232</timestamp>
+<node id="urn:wisebed:node:ubern:34">
+<data key="text">LoopTime:8:-22886</data>
+</node>
+<timestamp>478.604312</timestamp>
+<node id="urn:wisebed:node:ubern:2">
+<data key="text">LoopTime:8:31856</data>
+</node>
+<timestamp>480.994448</timestamp>
+<node id="urn:wisebed:node:ubern:17">
+<data key="text">LoopTime:12:24485</data>
+</node>
+<timestamp>481.244198</timestamp>
+<node id="urn:wisebed:node:ubern:11">
+<data key="text">LoopTime:6:-28127</data>
+</node>
+<timestamp>482.736516</timestamp>
+<node id="urn:wisebed:node:ubern:40">
+<data key="text">LoopTime:4:27496</data>
+</node>
+<timestamp>483.856777</timestamp>
+<node id="urn:wisebed:node:ubern:27">
+<data key="text">LoopTime:8:1084</data>
+</node>
+<timestamp>485.223406</timestamp>
+<node id="urn:wisebed:node:ubern:30">
+<data key="text">LoopTime:10:30258</data>
+</node>
+<timestamp>485.743588</timestamp>
+<node id="urn:wisebed:node:ubern:32">
+<data key="text">LoopTime:10:-14055</data>
+</node>
+<timestamp>485.859062</timestamp>
+<node id="urn:wisebed:node:ubern:33">
+<data key="text">LoopTime:8:6769</data>
+</node>
+<timestamp>487.358169</timestamp>
+<node id="urn:wisebed:node:ubern:13">
+<data key="text">LoopTime:6:-2379</data>
+</node>
+<timestamp>488.979141</timestamp>
+<node id="urn:wisebed:node:ubern:5">
+<data key="text">LoopTime:2:31795</data>
+</node>
+<timestamp>491.754888</timestamp>
+<node id="urn:wisebed:node:ubern:29">
+<data key="text">LoopTime:10:-5627</data>
+</node>
+<timestamp>492.362032</timestamp>
+<node id="urn:wisebed:node:ubern:21">
+<data key="text">LoopTime:10:9148</data>
+</node>
+<timestamp>492.754077</timestamp>
+<node id="urn:wisebed:node:ubern:38">
+<data key="text">LoopTime:10:27484</data>
+</node>
+<timestamp>494.480755</timestamp>
+<node id="urn:wisebed:node:ubern:36">
+<data key="text">LoopTime:14:-14802</data>
+</node>
+<timestamp>499.482549</timestamp>
+<node id="urn:wisebed:node:ubern:12">
+<data key="text">LoopTime:6:28147</data>
+</node>
+</trace>
+</wiseml>
