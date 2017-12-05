@@ -40,7 +40,7 @@ for file in glob.glob("*.wiseml"):
     xmax = np.amax(x1);
     xmin = np.amin(x1);
 	
-    figure.plot([0,xmax-xmin],[np.mean(y)] * 2)
+    figure.plot([xmin,xmax],[np.mean(y)] * 2)
     figure.set_xlim([xmin,xmax])
     figure.set_ylim([np.amin(y),np.amax(y)])
     fig.savefig('../images/'+file+'_loopCount.png', dpi=72)
@@ -53,7 +53,7 @@ for file in glob.glob("*.wiseml"):
     xmax = np.amax(x2);
     xmin = np.amin(x2);
 	
-    figure.plot([0,xmax-xmin],[np.mean(y)] * 2)
+    figure.plot([xmin,xmax],[np.mean(y)] * 2)
     figure.set_xlim([xmin,xmax])
     figure.set_ylim([np.amin(y),np.amax(y)])
     fig.savefig('../images/'+file+'_tarwisTime.png', dpi=72)
