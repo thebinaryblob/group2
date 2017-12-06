@@ -1,4 +1,4 @@
-CONTIKI_PROJECT = timesync
+CONTIKI_PROJECT = timesync_v2
 TARGET=sky
 all: $(CONTIKI_PROJECT)
 

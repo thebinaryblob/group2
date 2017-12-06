@@ -9,8 +9,8 @@
 #include "lib/random.h" /* for random numbers */
 
 /* Change these variables for testing */
-static clock_time_t rMultiplier = 1;
-static clock_time_t rDevider = 2;
+static uint8_t rMultiplier = 1;
+static uint8_t rDevider = 2;
 #define CLOCK_WAIT_UNICAST 10 // Wait befor calling the next neighbor
 static uint8_t debug = 0; // Use to toggle debug messages
 static int dontPrint;
@@ -202,13 +202,17 @@ PROCESS_THREAD(main_process, ev, data)
     broadcast_open(&bcConn, BROADCAST_CHANNEL, &broadcastCallback);
     unicast_open(&ucConn, UNICAST_CHANNEL, &unicast_callbacks);
 
+    // Scatter Clock Time
+    clock_set(-32768 + (random_rand() % 20000));
+    //printf("Initial Clock Time:%d\n", (uint16_t) clock_time());
+
     while(1)
     {
         /*randomWait = (random_rand() % 5);
         if(debug){printf("Random wait is set to %d.\n", randomWait);}
         etimer_set(&startTimer, randomWait*CLOCK_SECOND);
         PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&startTimer));*/
-
+	
         // Send broadcast and wait for replies
         send_broadcast();
         etimer_set(&loopTimer, CLOCK_WAIT*CLOCK_SECOND);
@@ -256,7 +260,7 @@ PROCESS_THREAD(main_process, ev, data)
 	
 	if(offset_count > 0)
 	{
-	    printf("Offset:%d.\n",(uint16_t) offset);
+	    //printf("Offset:%d.\n",(uint16_t) offset);
 	    clock_time_t newtime = clock_time() - offset * rMultiplier/rDevider;
 	    clock_set(newtime);
 	    clock_time_t diff = clock_time() - newtime;
@@ -269,7 +273,10 @@ PROCESS_THREAD(main_process, ev, data)
         dontPrint = numIter % PRINT_OUTPUT;
         if(!dontPrint)
         {
-            printf("LoopTime:%d:%d\n", numIter, (uint16_t)clock_time());
+	    printf("LoopTime:%d", numIter);
+            printf(":%d",(uint16_t) clock_time());
+	    printf(":%d",(uint16_t) offset);
+	    printf(":%d\n",(uint16_t) (offset * rMultiplier/rDevider));
         }
         if(debug){printf("#### End of Loop NR %d####\n", numIter);}
         numIter++;
