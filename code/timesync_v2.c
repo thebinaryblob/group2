@@ -261,7 +261,7 @@ PROCESS_THREAD(main_process, ev, data)
 	if(offset_count > 0)
 	{
 	    //printf("Offset:%d.\n",(uint16_t) offset);
-	    clock_time_t newtime = clock_time() - offset * rMultiplier/rDevider;
+	    clock_time_t newtime = clock_time() - (int) offset * rMultiplier/rDevider;
 	    clock_set(newtime);
 	    clock_time_t diff = clock_time() - newtime;
             etimer_adjust(&loopTimer,diff);
@@ -276,7 +276,7 @@ PROCESS_THREAD(main_process, ev, data)
 	    printf("LoopTime:%d", numIter);
             printf(":%d",(uint16_t) clock_time());
 	    printf(":%d",(uint16_t) offset);
-	    printf(":%d\n",(uint16_t) (offset * rMultiplier/rDevider));
+	    printf(":%d\n",(uint16_t) ((int) offset * rMultiplier/rDevider));
         }
         if(debug){printf("#### End of Loop NR %d####\n", numIter);}
         numIter++;
