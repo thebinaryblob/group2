@@ -19,6 +19,8 @@ for file in glob.glob("*.wiseml"):
     y = []
 	#colors
     cs = []
+	#clocktime to seconds (set to 1 in case of premature division)
+    clock_second = 128;
 	# 40 different colors
     colors = plt.cm.rainbow(np.linspace(0,1,40))
 	
@@ -31,7 +33,7 @@ for file in glob.glob("*.wiseml"):
     			loop_count = (float) (Decimal(valueSplit[1]))
     			node_time = valueSplit[2]
     			node_id = child.attrib['id']
-    			diff = ((float) (Decimal(node_time))) - timestamp
+    			diff = ((float) (Decimal(node_time)) / clock_second) - timestamp
 				
 				
     			if not node_id in data:
@@ -45,6 +47,7 @@ for file in glob.glob("*.wiseml"):
     			x2.append(timestamp)
     			y.append(diff)
     			cs.append(colors[nodes.index(node_id)])
+			    
     
     #print data
     
@@ -58,7 +61,7 @@ for file in glob.glob("*.wiseml"):
     figure.plot([xmin,xmax],[np.mean(y)] * 2)
     figure.set_xlim([xmin,xmax])
     figure.set_ylim([np.amin(y),np.amax(y)])
-    fig.savefig('../images/'+file+'_loopCount.png', dpi=72)
+    fig.savefig('../images/'+file+'_loopCount.png', dpi=300)
     plt.close()
 	
     fig = plt.figure()
@@ -71,7 +74,7 @@ for file in glob.glob("*.wiseml"):
     figure.plot([xmin,xmax],[np.mean(y)] * 2)
     figure.set_xlim([xmin,xmax])
     figure.set_ylim([np.amin(y),np.amax(y)])
-    fig.savefig('../images/'+file+'_tarwisTime.png', dpi=72)
+    fig.savefig('../images/'+file+'_tarwisTime.png', dpi=300)
     plt.close()
   
 
