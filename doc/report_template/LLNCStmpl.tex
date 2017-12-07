@@ -6,7 +6,28 @@
 \documentclass{llncs}
 %Use this line instead if you want to use running heads (i.e. headers on each page):
 %\documentclass[runningheads]{llncs}
-\usepackage{algorithm,algorithmic,amsmath,comment}
+\usepackage{algorithm,algorithmic,amsmath,comment,listings,color}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=C,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
 
 \begin{document}
 \title{Rate-based Synchronous Diffusion}
@@ -51,32 +72,32 @@
 Protocol introduction: Maximum 1 page about the theoretical basics of the experiment.
 \end{comment}
 \section{Protocol Introduction}
-Very often time synhronization of all sensors is requred in Wireless Sensor Network (WSN). Since each node has its own clock, it is  needed to synchronize clocks in order to support synhronized sleep and duty cycles among nodes.
+Very often time synchronization of all sensors is required in Wireless Sensor Network (WSN). Since each node has its own clock, it is  needed to synchronize clocks in order to support synchronized sleep and duty cycles among nodes.
 
  \textbf{Rate-Based Diffusion Protocol (RDP)} aims to synchronize the nodes in the network to the average value of the clocks in the network.
 Rate-Based Diffusion Protocol has two main phases:
 \begin{enumerate}
-\item  Neighborhood Discovery Phase
+\item  Neighbourhood Discovery Phase
 
-In this phase, each node has to periodically broadcast a packet with its ID and sequence number to get to know neighbors. All recognized neighbords are saved in neighbor table. Additionaly, with each neighbor we have to save the time offset between the node's time and the neighbors times. Broadcast is determined by time the node waits after starting broadcasting. This parameter value will be discused later in further sections. 
+In this phase, each node has to periodically broadcast a packet with its ID and sequence number to get to know neighbours. All recognized neighbours are saved in neighbour table. Additionally, with each neighbour we have to save the time offset between the node's time and the neighbours times. Broadcast is determined by time the node waits after starting broadcasting. This parameter value will be discussed later in further sections. 
 
 \item  Convergence Phase
 
-In covergence phase, each node periodically go throught neighbors table and update own time using following formula:
+In convergence phase, each node periodically go through neighbours table and update own time using following formula:
 \[t_i= t_i -  r * (t_i-t_j)\]
 Basic idea is to adapt time of the node to the neighbours node time using some r-value.
-R-value needs to be 0\textless r\textless 1. Results of choosing different r-values will be discused in further sections. 
+R-value needs to be $0<r<1$. Results of choosing different r-values will be discused in further sections. 
 In this phase, unicast messages are used to determine the offset between the clocks.  
 \end{enumerate}
 \pagebreak 
-Alghoritm 1 is showing the pseudo code for Rate-based Diffusion Protocol. 
+Algorithm 1 is showing the pseudo code for Rate-based Diffusion Protocol. 
 \begin{algorithm}
  \caption{Diffusion algorithm to synchronize the whole network}\label{euclid}
   \begin{algorithmic}[1]
     \STATE Do the following with some given frequency
     \FOR{each sensor $n_i$ in the network}
-     \STATE Exchange clock times with $n_i$'s neighbors
-      \FOR{each neighbor $n_j$}
+     \STATE Exchange clock times with $n_i$'s neighbours
+      \FOR{each neighbour $n_j$}
         \STATE Let the time difference between $n_i$ and $n_j$ be $t_i$ - $t_j$
         \STATE Change $n_i$'s time to $t_i$-$r_ij$($t_i$-$t_j$)
       \ENDFOR
@@ -89,8 +110,49 @@ Methods: especially, describe the methods used to realize the protocol
 (functions in the code and their functionality).
 \end{comment}
 \section{Methods}
-In the following part we will show implemented code for recieving and sending unicast messages. 
+In the following part we will show implemented code for receiving and sending unicast messages. The algorithm is very similar to RTT synchronization. A unicast message in our code contains the following variables:
+\begin{itemize}
+	\item a boolean to know if the message has passed one round
+	\item the ids of sender and receiver
+	\item the clock time values of both nodes
+\end{itemize}
+First the clock time from the sender is inserted and the message is sent to a neighbour. 
+\begin{lstlisting}
+00 rimeaddr_t addr;
+01 static struct unicastMessage ucReply;
+02 ucReply.senderId = node_id;
+03 ucReply.receiverId = neighborTable[i].id;;
+04 ucReply.senderTime = clock_time();
+05 ucReply.receiverTime = 0;
+06 ucReply.isRequestForTime = 1;
+07 
+08 addr.u8[0] = ucReply.receiverId;
+09 addr.u8[1] = 0;
+10 packetbuf_copyfrom(&ucReply, sizeof(ucReply));
+11 unicast_send(&ucConn, &addr);
+\end{lstlisting}
 
+That neighbour then inserts its time change the boolean and sends the packet back. The code is equivalent to the above expect the following lines:
+
+\begin{lstlisting}
+03 ucReply.receiverId = ucMessageReceived.senderId;
+05 ucReply.receiverTime = ucMessageReceived.senderTime;
+06 ucReply.isRequestForTime = 0;
+\end{lstlisting}
+
+
+ Then the offset the that neighbour is calculated and saved into the neighbour table. To calculate this offset we simply add half of the RTT to the neighbour time we receive back and compare it to our own time. 
+
+\begin{lstlisting}
+static clock_time_t calc_offset(clock_time_t senderTime, clock_time_t receiverTimeOld)
+{
+    clock_time_t curr = clock_time();
+    clock_time_t rtt = curr - receiverTimeOld;
+    clock_time_t neighborTime = senderTime + rtt/2;
+    clock_time_t offset = curr - neighborTime;
+    return offset;
+}
+\end{lstlisting}
 
 \begin{comment}
 Experimental setup/Measurement procedure: The experimental setup, the
@@ -100,13 +162,13 @@ sensor setup and TARWIS testbed.
 \section{Experimental setup}
 There were two phases of experiment. In the first phase we tested our program using Telos nodes and in the second phase we uploaded our code to TARWIS platform. We tried different values for\textit{r-value} and r\textit{unicast interval}. In addition, we run the code with different MAC protocols. In the first version of the program we used default NullMAC protocol and in the second we used X-MAC protocol. 
 
-By protocol alghoritm, \textit{r-value} needs to be value from range of zero to one. We chose to test our code for five different r-values: 0.1, 0.25, 0.5, 0.75 and 0.9. 
+By protocol algorithm, \textit{r-value} needs to be value from range of zero to one. We chose to test our code for five different r-values: 0.1, 0.25, 0.5, 0.75 and 0.9. 
 
 For \textit{unicast interval} value we chose values from 1 to 5 seconds. 
 
 \begin{comment}
-Results and Analysis: Analyze the results which are obtained by local sensors and
-on TARWIS testbed. Analyze your data with respect to the aim of the experiment. Your
+Results and Analysis: Analyse the results which are obtained by local sensors and
+on TARWIS testbed. Analyse your data with respect to the aim of the experiment. Your
 task during the experiment is not just to measure and document your measurements, but
 to derive and present conclusions from your measurements.
 \end{comment}
@@ -116,7 +178,7 @@ to derive and present conclusions from your measurements.
 \begin{comment}
 Conclusions: Summarize and discuss your results with respect to the literature or
 your own scientific expectations. You should in particular discuss possible error sources
-and give a short judgment on the quality of the experimental setup (because you also
+and give a short judgement on the quality of the experimental setup (because you also
 learn to design the measurement setups). If needed, suggest how to improve the setups.
 \end{comment}
 
