@@ -13,7 +13,6 @@ static uint8_t rMultiplier = 1;
 static uint8_t rDevider = 2;
 #define CLOCK_WAIT 10 // Wait for reploy when building neighbor table
 #define CLOCK_WAIT_UNICAST 10 // Wait before converging
-static uint8_t debug = 0; // Use to toggle debug messages
 static int dontPrint;
 
 /* constants */
@@ -118,10 +117,6 @@ static void send_broadcast() {
 	bcSendMessage.id = node_id;
 	packetbuf_copyfrom(&bcSendMessage, sizeof(bcSendMessage));
 	broadcast_send(&bcConn);
-
-	if (debug) {
-		printf("Node %d: Sending Broadcast.\n", node_id);
-	}
 }
 
 /* Receive unicast */
