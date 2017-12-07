@@ -154,6 +154,30 @@ static clock_time_t calc_offset(clock_time_t senderTime, clock_time_t receiverTi
 }
 \end{lstlisting}
 
+After a certain waiting for a certain time to make sure to receive all unicasts back, the sum off all offsets is calculated, multiplicated with the r-value and substracted from the clock time. This way the clock time needs to be adjusted only once per round.
+
+\begin{lstlisting}
+clock_time_t offset = 0;	
+int offset_count = 0;
+for(i = 0; i < neighborArrayOccupied; i++)
+{
+	clock_time_t offset_tmp = neighborTable[i].offset;
+	neighborTable[i].offset = 0;
+	if(offset_tmp > 0)
+	{
+		offset += offset_tmp;
+		offset_count++;
+	}
+}
+	
+if(offset_count > 0)
+{
+	clock_time_t newtime = clock_time() - (int) offset * rMultiplier/rDevider;
+	clock_set(newtime);
+}
+
+\end{lstlisting}
+
 \begin{comment}
 Experimental setup/Measurement procedure: The experimental setup, the
 differences of the experimental series, the different parameters used, including local
