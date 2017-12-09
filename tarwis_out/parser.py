@@ -51,18 +51,18 @@ for file in glob.glob("*.wiseml"):
     
     #print data
     
-    fig = plt.figure()
-    figure = fig.add_subplot(111)
-    figure.scatter(x1,y, color=cs)
+    #fig = plt.figure()
+    #figure = fig.add_subplot(111)
+    #figure.scatter(x1,y, color=cs)
 	
-    xmax = np.amax(x1);
-    xmin = np.amin(x1);
+    #xmax = np.amax(x1);
+    #xmin = np.amin(x1);
 	
-    figure.plot([xmin,xmax],[np.mean(y)] * 2)
-    figure.set_xlim([xmin,xmax])
-    figure.set_ylim([np.amin(y),np.amax(y)])
-    fig.savefig('../images/'+file+'_loopCount.png', dpi=300)
-    plt.close()
+    #figure.plot([xmin,xmax],[np.mean(y)] * 2)
+    #figure.set_xlim([xmin,xmax])
+    #figure.set_ylim([np.amin(y),np.amax(y)])
+    #fig.savefig('../images/'+file+'_loopCount.png', dpi=300)
+    #plt.close()
 	
     fig = plt.figure()
     figure = fig.add_subplot(111)
