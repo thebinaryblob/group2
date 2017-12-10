@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6300) (preloaded format=pdflatex 2017.9.20)  10 DEC 2017 19:34
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6300) (preloaded format=pdflatex 2017.9.20)  11 DEC 2017 00:45
 entering extended mode
 **./LLNCStmpl.tex
 (LLNCStmpl.tex
@@ -386,27 +386,28 @@ nt.
 <05_10.png, id=20, 462.528pt x 346.896pt>
 File: 05_10.png Graphic file (type png)
  <use 05_10.png>
-Package pdftex.def Info: 05_10.png used on input line 194.
+Package pdftex.def Info: 05_10.png used on input line 192.
 (pdftex.def)             Requested size: 347.12354pt x 260.35661pt.
- [3]
-<05_10_40.png, id=26, 462.528pt x 346.896pt>
+
+<05_10_40.png, id=22, 462.528pt x 346.896pt>
 File: 05_10_40.png Graphic file (type png)
  <use 05_10_40.png>
-Package pdftex.def Info: 05_10_40.png used on input line 208.
+Package pdftex.def Info: 05_10_40.png used on input line 197.
 (pdftex.def)             Requested size: 347.12354pt x 260.35661pt.
+ [3]
+Overfull \vbox (18.07495pt too high) has occurred while \output is active []
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [4 <./05_10.png>] <xmac.png, id=31, 462.528pt x 346.896pt>
+[4 <./05_10.png> <./05_10_40.png>] <xmac.png, id=32, 462.528pt x 346.896pt>
 File: xmac.png Graphic file (type png)
- <use xmac.png>
-Package pdftex.def Info: xmac.png used on input line 215.
-(pdftex.def)             Requested size: 347.12354pt x 260.35661pt.
 
+<use xmac.png>
+Package pdftex.def Info: xmac.png used on input line 214.
+(pdftex.def)             Requested size: 347.12354pt x 260.35661pt.
+ Excluding 'comment' comment.
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [5 <./05_10_40.png>] Excluding 'comment' comment. [6 <./xmac.png>] (LLNCStmpl.
-aux) ) 
+ [5 <./xmac.png>] [6] (LLNCStmpl.aux) ) 
 Here is how much of TeX's memory you used:
  4292 strings out of 493328
  58963 string characters out of 3136538
@@ -414,21 +415,22 @@ Here is how much of TeX's memory you used:
  7758 multiletter control sequences out of 15000+200000
  8708 words of font info for 32 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 39i,6n,49p,519b,1506s stack positions out of 5000i,500n,10000p,200000b,50000s
-<C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx10.
-pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pf
-b><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx9.pfb><
-C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:
-/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Pr
-ogram Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Progr
-am Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi9.pfb><C:/Program 
-Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Fil
-es (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/Program Files (
-x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files (x8
-6)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy9.pfb><C:/Program Files (x86)/
-MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Program Files (x86)/Mi
-KTeX 2.9/fonts/type1/public/amsfonts/cm/cmtt9.pfb>
-Output written on LLNCStmpl.pdf (6 pages, 607475 bytes).
+ 39i,7n,49p,601b,1506s stack positions out of 5000i,500n,10000p,200000b,50000s
+<C:/Program Files (x86)/MiKTeX 2.9/fonts
+/type1/public/amsfonts/cm/cmbx10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/t
+ype1/public/amsfonts/cm/cmbx12.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/typ
+e1/public/amsfonts/cm/cmbx9.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/
+public/amsfonts/cm/cmmi10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/pu
+blic/amsfonts/cm/cmmi6.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/publi
+c/amsfonts/cm/cmmi7.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/a
+msfonts/cm/cmmi9.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsf
+onts/cm/cmr10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfont
+s/cm/cmr9.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm
+/cmsy10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/c
+msy9.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti
+10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmtt9.
+pfb>
+Output written on LLNCStmpl.pdf (6 pages, 608657 bytes).
 PDF statistics:
  80 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)

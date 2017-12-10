@@ -171,11 +171,11 @@ differences of the experimental series, the different parameters used, including
 sensor setup and TARWIS testbed.
 \end{comment}
 \section{Experimental setup}
-There were two phases of experiment. In the first phase we tested our program using Telos nodes and in the second phase we uploaded our code to TARWIS platform. We tried different values for\textit{r-value} and r\textit{unicast interval}. In addition, we run the code with different MAC protocols. In the first version of the program we used default NullMAC protocol and in the second we used X-MAC protocol. 
+There were two phases of experiment. In the first phase we tested our program using Telos nodes and in the second phase we uploaded our code to TARWIS platform. We tried different values for\textit{r-value}, the \textit{unicast interval} as well as the \textit{broadcast interval}. In addition, we run the code with different MAC protocols. In the first version of the program we used default NullMAC protocol and in the second we used X-MAC protocol. 
 
 By protocol algorithm, \textit{r-value} needs to be value from range of zero to one. We chose to test our code for five different r-values: 0.25, 0.5, and 0.75. 
 
-For \textit{unicast interval} value we chose values from 5 to 10 seconds. 
+For \textit{unicast interval} value we chose values from 5 to 10 seconds.
 
 \begin{comment}
 Results and Analysis: Analyse the results which are obtained by local sensors and
@@ -186,27 +186,28 @@ to derive and present conclusions from your measurements.
 
 \section{Results and Analysis}
 
-First an Time Interval of 10 Seconds was chosen for both after the broadcast message and another after the unicast messages. There was one test with a lower Time Intervals though the result wasn't satisfying.
-The results showed that and \textit{r-value} of 0.5 is optimal though there were 3 nodes not responding to the algorithm when testing with 40 nodes.
-
+The final results showed that and \textit{r-value} of 0.5 is optimal though there were 3 nodes not responding to the algorithm when testing with 40 nodes.
 \begin{figure}[H]
   \centering
   \includegraphics[width=\linewidth]{05_10.png}
   \caption{Test with $r=0.5$ ,both intervals $10$s, with $10$ nodes}
   \label{fig:Test with 10 Nodes}
-\end{figure}
-
-The time interval was kept during all tests. 
-For r-value smaller than 0.5 the conversion still was happening, but it was happening at a slower rate. 
-If the value was over 0.5 there was no visible conversion in the charts.
-When testing with XMAC, no node was responding to one another. This was probably because the nodes weren't able to build their neighbour table.
-
-\begin{figure}[H]
+  
   \centering
   \includegraphics[width=\linewidth]{05_10_40.png}
   \caption{Test with $r=0.5$ ,both intervals $10$s, with $40$ nodes}
   \label{fig:Test with 40 Nodes}
 \end{figure}
+
+In these charts the time difference is the difference between the node time and the TARWIS time. The TARWIS time thus represents some global reference. You can also see a line which is the mean over all measurements.
+
+At first a time interval of 10 Seconds was chosen for both intervals. Later on there were tests with lower time intervals though the result weren't satisfying,
+so the time intervals were kept during all tests. 
+For r-values smaller than 0.5 the conversion still was happening, but at a slower rate.
+If the r-value was over 0.5 there was no visible conversion in the charts.
+When testing with XMAC, no node was responding to one another. 
+This was probably because the nodes weren't able to build their neighbour table, or they did not pick up the unicasts from their neighbours, thus they were not able to send them back and the offsets would stay to 0 for each neighbour, so the clock won't change.
+
 
 \begin{figure}[H]
   \centering
@@ -215,6 +216,7 @@ When testing with XMAC, no node was responding to one another. This was probably
   \label{fig:Test xmac}
 \end{figure}
 
+It makes intuitively sense that an r-value of 0.5 would show the best results which was confirmed by our test.
 
 
 \begin{comment}
@@ -226,10 +228,13 @@ learn to design the measurement setups). If needed, suggest how to improve the s
 
 \section{Conclusions}
 
-It is difficult to find out a good interval for both broadcast and unicast messages. Since the time a packet has to travel between nodes can be affected by multiple sources. The big problem is that those sources e.g. the environment can change every loop, so the interval should be changed as well in order to get satisfying results.
+There are a lot of challenges when implementing this algorithm. First of all it is difficult to find good times for the both intervals since conditions like environment can change every time, theses intervals ideally need to be different every time. Second there were also technical challenges. The clock time for example only has a certain range and switches from its highest value to its lowest value when overflowing and vice versa. When working with such nodes it is essential to know those things in order to succeed. In light of that the results were more or less as expected.
 
 \subsection{Improvements}
-Even though the synchronization worked well, there are still a lot of improvements that could be made. The clock time from a clock on the TelosB nodes only has a ceration range, which means that overflows will happen at some point. Our code does not take this into consideration. Also the calculation for the offset is done with integers, so rounding errors could occur. If there are a lot of unicast messages sent at one point, packets may be lost resulting in a slower performance of the algorithm.
+Even though the synchronization worked well, there are still a lot of improvements that could be made. 
+For example the clock time is not taken into consideration in the code.
+Further the calculation for the offset is done with integers, so rounding errors could occur. 
+If there are a lot of unicast messages sent at one point, packets may be lost resulting in a slower performance of the algorithm.
 
 
 
