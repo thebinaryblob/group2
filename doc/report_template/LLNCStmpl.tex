@@ -6,7 +6,7 @@
 \documentclass{llncs}
 %Use this line instead if you want to use running heads (i.e. headers on each page):
 %\documentclass[runningheads]{llncs}
-\usepackage{algorithm,algorithmic,amsmath,comment,listings,color}
+\usepackage{algorithm,algorithmic,amsmath,comment,listings,color,graphicx, float}
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
@@ -116,30 +116,23 @@ In the following part we will show implemented code for receiving and sending un
 	\item the ids of sender and receiver
 	\item the clock time values of both nodes
 \end{itemize}
-First the clock time from the sender is inserted and the message is sent to a neighbour. 
-\begin{lstlisting}
-00 rimeaddr_t addr;
-01 static struct unicastMessage ucReply;
-02 ucReply.senderId = node_id;
-03 ucReply.receiverId = neighborTable[i].id;;
-04 ucReply.senderTime = clock_time();
-05 ucReply.receiverTime = 0;
-06 ucReply.isRequestForTime = 1;
-07 
-08 addr.u8[0] = ucReply.receiverId;
-09 addr.u8[1] = 0;
-10 packetbuf_copyfrom(&ucReply, sizeof(ucReply));
-11 unicast_send(&ucConn, &addr);
-\end{lstlisting}
-
-That neighbour then inserts its time change the boolean and sends the packet back. The code is equivalent to the above expect the following lines:
+First the clock time from the sender is inserted and the message is sent to a neighbour. That neighbour then inserts its time change the boolean and sends the packet back. The code is equivalent to the above expect the following lines. The send\_uc method is used for both: 
 
 \begin{lstlisting}
-03 ucReply.receiverId = ucMessageReceived.senderId;
-05 ucReply.receiverTime = ucMessageReceived.senderTime;
-06 ucReply.isRequestForTime = 0;
-\end{lstlisting}
+static void send_uc(uint8_t receiverId, clock_time_t receiverTime, uint8_t isRequestForTime) {
+	rimeaddr_t addr;
+	static struct unicastMessage ucReply;
+	ucReply.senderId = node_id;
+	ucReply.senderTime = clock_time();
+	ucReply.receiverTime = receiverTime;
+	ucReply.isRequestForTime = isRequestForTime;
 
+	addr.u8[0] = receiverId;
+	addr.u8[1] = 0;
+	packetbuf_copyfrom(&ucReply, sizeof(ucReply));
+	unicast_send(&ucConn, &addr);
+}
+\end{lstlisting}
 
  Then the offset the that neighbour is calculated and saved into the neighbour table. To calculate this offset we simply add half of the RTT to the neighbour time we receive back and compare it to our own time. 
 
@@ -157,22 +150,16 @@ static clock_time_t calc_offset(clock_time_t senderTime, clock_time_t receiverTi
 After a certain waiting for a certain time to make sure to receive all unicasts back, the sum off all offsets is calculated, multiplicated with the r-value and substracted from the clock time. This way the clock time needs to be adjusted only once per round.
 
 \begin{lstlisting}
-clock_time_t offset = 0;	
-int offset_count = 0;
-for(i = 0; i < neighborArrayOccupied; i++)
+static void converge(int numIter)
 {
-	clock_time_t offset_tmp = neighborTable[i].offset;
-	neighborTable[i].offset = 0;
-	if(offset_tmp > 0)
-	{
-		offset += offset_tmp;
-		offset_count++;
+	clock_time_t offset = 0;
+	static int i;
+	for (i = 0; i < neighborArrayOccupied; i++) {
+		offset += neighborTable[i].offset;
+		neighborTable[i].offset = 0;
 	}
-}
-	
-if(offset_count > 0)
-{
-	clock_time_t newtime = clock_time() - (int) offset * rMultiplier/rDevider;
+
+	clock_time_t newtime = clock_time() - (int) offset * rMultiplier / rDevider;
 	clock_set(newtime);
 }
 
@@ -186,9 +173,9 @@ sensor setup and TARWIS testbed.
 \section{Experimental setup}
 There were two phases of experiment. In the first phase we tested our program using Telos nodes and in the second phase we uploaded our code to TARWIS platform. We tried different values for\textit{r-value} and r\textit{unicast interval}. In addition, we run the code with different MAC protocols. In the first version of the program we used default NullMAC protocol and in the second we used X-MAC protocol. 
 
-By protocol algorithm, \textit{r-value} needs to be value from range of zero to one. We chose to test our code for five different r-values: 0.1, 0.25, 0.5, 0.75 and 0.9. 
+By protocol algorithm, \textit{r-value} needs to be value from range of zero to one. We chose to test our code for five different r-values: 0.25, 0.5, and 0.75. 
 
-For \textit{unicast interval} value we chose values from 1 to 5 seconds. 
+For \textit{unicast interval} value we chose values from 5 to 10 seconds. 
 
 \begin{comment}
 Results and Analysis: Analyse the results which are obtained by local sensors and
@@ -199,6 +186,37 @@ to derive and present conclusions from your measurements.
 
 \section{Results and Analysis}
 
+First an Time Interval of 10 Seconds was chosen for both after the broadcast message and another after the unicast messages. There was one test with a lower Time Intervals though the result wasn't satisfying.
+The results showed that and \textit{r-value} of 0.5 is optimal though there were 3 nodes not responding to the algorithm when testing with 40 nodes.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{05_10.png}
+  \caption{Test with $r=0.5$ ,both intervals $10$s, with $10$ nodes}
+  \label{fig:Test with 10 Nodes}
+\end{figure}
+
+The time interval was kept during all tests. 
+For r-value smaller than 0.5 the conversion still was happening, but it was happening at a slower rate. 
+If the value was over 0.5 there was no visible conversion in the charts.
+When testing with XMAC, no node was responding to one another. This was probably because the nodes weren't able to build their neighbour table.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{05_10_40.png}
+  \caption{Test with $r=0.5$ ,both intervals $10$s, with $40$ nodes}
+  \label{fig:Test with 40 Nodes}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{xmac.png}
+  \caption{Test with Xmac}
+  \label{fig:Test xmac}
+\end{figure}
+
+
+
 \begin{comment}
 Conclusions: Summarize and discuss your results with respect to the literature or
 your own scientific expectations. You should in particular discuss possible error sources
@@ -207,6 +225,13 @@ learn to design the measurement setups). If needed, suggest how to improve the s
 \end{comment}
 
 \section{Conclusions}
+
+It is difficult to find out a good interval for both broadcast and unicast messages. Since the time a packet has to travel between nodes can be affected by multiple sources. The big problem is that those sources e.g. the environment can change every loop, so the interval should be changed as well in order to get satisfying results.
+
+\subsection{Improvements}
+Even though the synchronization worked well, there are still a lot of improvements that could be made. The clock time from a clock on the TelosB nodes only has a ceration range, which means that overflows will happen at some point. Our code does not take this into consideration. Also the calculation for the offset is done with integers, so rounding errors could occur. If there are a lot of unicast messages sent at one point, packets may be lost resulting in a slower performance of the algorithm.
+
+
 
 
 %The bibliography, done here without a bib file
@@ -220,13 +245,13 @@ learn to design the measurement setups). If needed, suggest how to improve the s
 %\bibliographystyle{splncs03}
 %If you want to use a different BibTex style include [oribibl] in the document class line
 
-\begin{thebibliography}{1}
+%\begin{thebibliography}{1}
 %add each reference in here like this:
-\bibitem[RE1]{reference1}
-Author:
-Article/Book:
-Other info: (date) page numbers.
-\end{thebibliography}
+%\bibitem[RE1]{reference1}
+%Author:
+%Article/Book:
+%Other info: (date) page numbers.
+%\end{thebibliography}
 
 \end{document}
 
